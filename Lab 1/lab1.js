@@ -1,5 +1,9 @@
 const questionOne = function questionOne(arr) {
-  // Implement question 1 here
+  arr.forEach((number) => {
+    console.log(number);
+
+    const modifiedNumber = number * number - 7;
+  });
 };
 
 const questionTwo = function questionTwo(arr) {
