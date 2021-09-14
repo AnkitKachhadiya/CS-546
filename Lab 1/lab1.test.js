@@ -1,13 +1,19 @@
 const lab1 = require("./lab1");
 
+/*
+| Question 1 test cases
+*/
+console.log(lab1.questionOne([5, 3, 10]));
+//returns and outputs: {'18': false, '2': true, '93': false}
+
 console.log(lab1.questionOne([2]));
-// should return and output: {'3': true}
+// returns and outputs: {'3': true}
 
-//console.log(lab1.questionTwo([1, 2, 3, 2, 1]));
-// should return and output: [1, 2, 3]
+console.log(lab1.questionOne([]));
+// returns and outputs: {}
 
-//console.log(lab1.questionThree(["bar", "car", "car", "arc"]));
-// should return and output: { acr: ["car", "arc"] }
+console.log(lab1.questionOne());
+// returns and outputs: {}
 
-//console.log(lab1.questionFour(1, 3, 2));
-// should return and output: 4
+console.log(lab1.questionOne([-5, 0, 11, 23]));
+// returns and outputs: {'7': true, '18': false, '114': false, '522': false}
