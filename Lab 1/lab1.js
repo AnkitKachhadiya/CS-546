@@ -1,12 +1,12 @@
 const questionOne = function questionOne(arr) {
-  if (!Array.isArray(arr)) {
+  if (!Array.isArray(arr) || arr.length <= 0) {
     return {};
   }
 
   const result = {};
 
-  arr.forEach((number) => {
-    const modifiedNumber = number * number - 7;
+  arr.forEach((currentNumber) => {
+    const modifiedNumber = currentNumber * currentNumber - 7;
     const absoluteModifiedNumber = Math.abs(modifiedNumber);
 
     result[absoluteModifiedNumber] = isNumberPrime(absoluteModifiedNumber);
@@ -16,7 +16,19 @@ const questionOne = function questionOne(arr) {
 };
 
 const questionTwo = function questionTwo(arr) {
-  // Implement question 2 here
+  if (!Array.isArray(arr) || arr.length <= 0) {
+    return [];
+  }
+
+  const uniqueArray = [];
+
+  arr.forEach((currentElement) => {
+    if (!uniqueArray.includes(currentElement)) {
+      uniqueArray.push(currentElement);
+    }
+  });
+
+  return uniqueArray;
 };
 
 const questionThree = function questionThree(arr) {
