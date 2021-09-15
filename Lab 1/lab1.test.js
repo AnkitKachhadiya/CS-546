@@ -34,18 +34,40 @@ console.log(lab1.questionTwo([]));
 //returns and outputs: []
 
 console.log(
-  lab1.questionTwo([
-    0,
-    "0",
-    12.3,
-    12.3,
-    -45,
-    true,
-    true,
-    45,
-    "Duplicate",
-    "duplicate",
-    "Duplicate",
-  ])
+	lab1.questionTwo([
+		0,
+		"0",
+		12.3,
+		12.3,
+		-45,
+		true,
+		true,
+		45,
+		"Duplicate",
+		"duplicate",
+		"Duplicate",
+	])
 );
 //returns and outputs: [0, '0', 12.3, -45, true, 45, 'Duplicate', 'duplicate']
+
+/**
+ * Question 3 test cases
+ */
+
+/**
+ * Question 4 test cases
+ */
+console.log(lab1.questionFour(1, 3, 2));
+//returns and outputs: 4
+
+console.log(lab1.questionFour(2, 6, 5));
+//returns and outputs: 194
+
+console.log(lab1.questionFour(2, 0, 7));
+//returns and outputs: 1681
+
+console.log(lab1.questionFour(1, 1, 1));
+//returns and outputs: 3
+
+console.log(lab1.questionFour(3, 3, 1));
+//returns and outputs: 5
