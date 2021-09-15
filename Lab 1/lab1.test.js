@@ -34,19 +34,19 @@ console.log(lab1.questionTwo([]));
 //returns and outputs: []
 
 console.log(
-	lab1.questionTwo([
-		0,
-		"0",
-		12.3,
-		12.3,
-		-45,
-		true,
-		true,
-		45,
-		"Duplicate",
-		"duplicate",
-		"Duplicate",
-	])
+    lab1.questionTwo([
+        0,
+        "0",
+        12.3,
+        12.3,
+        -45,
+        true,
+        true,
+        45,
+        "Duplicate",
+        "duplicate",
+        "Duplicate",
+    ])
 );
 //returns and outputs: [0, '0', 12.3, -45, true, 45, 'Duplicate', 'duplicate']
 
