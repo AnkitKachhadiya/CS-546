@@ -32,7 +32,34 @@ const questionTwo = function questionTwo(arr) {
 };
 
 const questionThree = function questionThree(arr) {
-    // Implement question 3 here
+    if (!Array.isArray(arr) || arr.length <= 0) {
+        return {};
+    }
+
+    const anagrams = {};
+
+    arr.forEach((currentElement) => {
+        const sortedString = alphabeticallySortedString(currentElement);
+
+        //if key does not exist then add key and value as empty array
+        if (anagrams[sortedString] === undefined) {
+            anagrams[sortedString] = [];
+        }
+
+        //only add unique elements to that array
+        if (!anagrams[sortedString].includes(currentElement)) {
+            anagrams[sortedString].push(currentElement);
+        }
+    });
+
+    for (const key in anagrams) {
+        //remove invalid anagrams
+        if (anagrams[key].length < 2) {
+            delete anagrams[key];
+        }
+    }
+
+    return anagrams;
 };
 
 const questionFour = function questionFour(num1, num2, num3) {
@@ -69,6 +96,18 @@ const isNumberPrime = (number) => {
         }
     }
     return true;
+};
+
+const alphabeticallySortedString = (string) => {
+    const arrayedString = string.split("");
+
+    //used localCompare() with sort() instead of only sort() as it sorts data based on ASCII.
+    //so while sorting string 'aaB' will give output 'Baa' because of ASCII comparison using only sort().
+    arrayedString.sort((firstElement, secondElement) => {
+        return firstElement.localeCompare(secondElement);
+    });
+
+    return arrayedString.join("");
 };
 
 const calculateFactorial = (number) => {

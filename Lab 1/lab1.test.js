@@ -53,6 +53,49 @@ console.log(
 /**
  * Question 3 test cases
  */
+console.log(lab1.questionThree(["cat", "act", "foo", "bar"]));
+// returns and outputs: { act: ["cat", "act"] }
+
+console.log(lab1.questionThree(["race", "care", "foo", "foo", "foo"]));
+// returns and outputs: { acer: ["race", "care"] }
+
+console.log(lab1.questionThree(["foo", "bar", "test", "Patrick", "Hill"]));
+// returns and outputs: {}
+
+console.log(
+    lab1.questionThree([
+        "alerts",
+        "alters",
+        "artels",
+        "estral",
+        "laster",
+        "ratels",
+        "salter",
+        "slater",
+        "staler",
+        "stelar",
+        "talers",
+        "stale",
+        "steal",
+        "stela",
+        "taels",
+    ])
+);
+// returns and outputs: { aelrst: [ 'alerts', 'alters', 'artels', 'estral','laster', 'ratels','salter', 'slater','staler', 'stelar','talers'], aelst: [ 'stale', 'steal', 'stela', 'taels' ] }
+console.log(
+    lab1.questionThree([
+        "auctioned",
+        "cautioned",
+        "education",
+        "I",
+        "am",
+        "student",
+        "stunted",
+        "Batman",
+        "manBat",
+    ])
+);
+// returns and outputs: {}
 
 /**
  * Question 4 test cases
