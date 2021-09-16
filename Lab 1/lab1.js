@@ -126,7 +126,7 @@ const calculateFactorial = (number) => {
 };
 
 module.exports = {
-    firstName: "Ankit Hasmukh",
+    firstName: "Ankit",
     lastName: "Kachhadiya",
     studentId: "20007140",
     questionOne,
