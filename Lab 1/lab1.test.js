@@ -95,7 +95,7 @@ console.log(
         "manBat",
     ])
 );
-// returns and outputs: {}
+// returns and outputs: { acdeinotu: [ 'auctioned', 'cautioned', 'education' ], densttu: [ 'student', 'stunted' ], aaBmnt: [ 'Batman', 'manBat' ] }
 
 /**
  * Question 4 test cases
