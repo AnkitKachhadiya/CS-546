@@ -82,13 +82,25 @@ const medianElement = (arr) => {
     if (arr.length % 2 === 0) {
         medianIndex = midPoint;
 
+        //median for even length
         median = (arr[midPoint - 1] + arr[midPoint]) / 2;
     } else {
         medianIndex = Math.floor(midPoint);
 
+        //median for odd length
         median = arr[medianIndex];
     }
-    result[median] = medianIndex;
+
+    let resultantMedianIndex;
+
+    //set median index to the 1st occurrence of median value
+    if (arr.indexOf(median) >= 0) {
+        resultantMedianIndex = arr.indexOf(median);
+    } else {
+        resultantMedianIndex = medianIndex;
+    }
+
+    result[median] = resultantMedianIndex;
 
     return result;
 };

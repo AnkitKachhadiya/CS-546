@@ -27,7 +27,7 @@ try {
 // }
 
 try {
-    console.log(arrayUtils.medianElement([1, 2, 3, 4]));
+    console.log(arrayUtils.medianElement([1.1, 0.1, 0.1]));
 } catch (error) {
     console.error(error);
 }
