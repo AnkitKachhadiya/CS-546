@@ -71,6 +71,26 @@ const medianElement = (arr) => {
     isArgumentArray(arr);
     isArrayEmpty(arr);
     doesArrayHasAllNumbers(arr);
+
+    const result = {};
+
+    let median;
+    let medianIndex;
+
+    const midPoint = arr.length / 2;
+
+    if (arr.length % 2 === 0) {
+        medianIndex = midPoint;
+
+        median = (arr[midPoint - 1] + arr[midPoint]) / 2;
+    } else {
+        medianIndex = Math.floor(midPoint);
+
+        median = arr[medianIndex];
+    }
+    result[median] = medianIndex;
+
+    return result;
 };
 
 const merge = (arr) => {};
