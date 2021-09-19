@@ -6,6 +6,7 @@ const average = (arr) => {
 
     let sum = 0;
     let totalCount = 0;
+
     arr.forEach((currentArray) => {
         doesArrayHasAllNumbers(currentArray);
 
@@ -18,9 +19,59 @@ const average = (arr) => {
     return Math.round(sum / totalCount);
 };
 
-const modeSquared = (arr) => {};
+const modeSquared = (arr) => {
+    isArgumentArray(arr);
+    isArrayEmpty(arr);
+    doesArrayHasAllNumbers(arr);
 
-const medianElement = (arr) => {};
+    const modes = {};
+
+    const highestModes = [];
+
+    let highestFrequentNumberIndex = arr[0];
+
+    //creating object with key as a current element and value as its frequency
+    arr.forEach((currentNumber) => {
+        if (modes[currentNumber] === undefined) {
+            modes[currentNumber] = 0;
+        }
+
+        modes[currentNumber]++;
+
+        //saving index of highest frequent number of the object
+        if (modes[highestFrequentNumberIndex] < modes[currentNumber]) {
+            highestFrequentNumberIndex = currentNumber;
+        }
+    });
+
+    //collect all numbers whose frequency matches with highest frequent number
+    for (const key in modes) {
+        if (modes[key] === modes[highestFrequentNumberIndex]) {
+            highestModes.push(Number(key));
+        }
+    }
+
+    //frequency should be more than 1 to be considered for further calculation
+    if (modes[highestFrequentNumberIndex] < 2) {
+        return 0;
+    }
+
+    //doing sum of mode squared for final result using reduce()
+    const modeSquaredSum = highestModes.reduce(
+        (previousValue, currentValue) => {
+            return previousValue + currentValue * currentValue;
+        },
+        0
+    );
+
+    return modeSquaredSum;
+};
+
+const medianElement = (arr) => {
+    isArgumentArray(arr);
+    isArrayEmpty(arr);
+    doesArrayHasAllNumbers(arr);
+};
 
 const merge = (arr) => {};
 
@@ -50,12 +101,12 @@ const doesArrayOfArrayHasValues = (arr) => {
 };
 
 const doesArrayHasAllNumbers = (arr) => {
-    const isAllElementsNumbers = arr.every((currentElement) => {
+    const isAllElementsNumbers = Array.from(arr).every((currentElement) => {
         return typeof currentElement === "number" && !isNaN(currentElement);
     });
 
     if (!isAllElementsNumbers) {
-        throw "Error: All elements in an array must have array as an element containing only numbers.";
+        throw "Error: All elements in an array must be numbers.";
     }
 };
 
