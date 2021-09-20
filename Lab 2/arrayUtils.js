@@ -72,18 +72,25 @@ const medianElement = (arr) => {
     isArrayEmpty(arr);
     doesArrayHasAllNumbers(arr);
 
+    const unsortedArr = [...arr];
+
+    arr.sort();
     const result = {};
 
     let median;
     let medianIndex;
+    let midFirstNumber;
+    let midSecondNumber;
 
     const midPoint = arr.length / 2;
 
     if (arr.length % 2 === 0) {
         medianIndex = midPoint;
+        midFirstNumber = arr[midPoint - 1];
+        midSecondNumber = arr[midPoint];
 
         //median for even length
-        median = (arr[midPoint - 1] + arr[midPoint]) / 2;
+        median = (midFirstNumber + midSecondNumber) / 2;
     } else {
         medianIndex = Math.floor(midPoint);
 
@@ -94,10 +101,17 @@ const medianElement = (arr) => {
     let resultantMedianIndex;
 
     //set median index to the 1st occurrence of median value
-    if (arr.indexOf(median) >= 0) {
-        resultantMedianIndex = arr.indexOf(median);
+    if (unsortedArr.indexOf(median) >= 0) {
+        resultantMedianIndex = unsortedArr.indexOf(median);
     } else {
-        resultantMedianIndex = medianIndex;
+        midFirstNumberIndex = unsortedArr.indexOf(midFirstNumber);
+        midSecondNumberIndex = unsortedArr.indexOf(midSecondNumber);
+
+        //check whether who has higher index value among mid point numbers in an unsorted array
+        resultantMedianIndex =
+            midFirstNumberIndex > midSecondNumberIndex
+                ? midFirstNumberIndex
+                : midSecondNumberIndex;
     }
 
     result[median] = resultantMedianIndex;
@@ -105,7 +119,48 @@ const medianElement = (arr) => {
     return result;
 };
 
-const merge = (arr) => {};
+const merge = (arrOne, arrTwo) => {
+    isArgumentArray(arrOne);
+    isArrayEmpty(arrOne);
+    doesArrayHasNumbersOrChars(arrOne);
+
+    isArgumentArray(arrTwo);
+    isArrayEmpty(arrTwo);
+    doesArrayHasNumbersOrChars(arrTwo);
+
+    const mergedArr = [...arrOne, ...arrTwo];
+    const allChars = [];
+    const allNumbers = [];
+
+    mergedArr.forEach((currentElement) => {
+        if (typeof currentElement === "number") {
+            allNumbers.push(currentElement);
+        } else {
+            allChars.push(currentElement);
+        }
+    });
+
+    allNumbers.sort();
+
+    // allChars.sort((firstElement, secondElement) => {
+    //     console.log(
+    //         { firstElement, secondElement },
+    //         firstElement > secondElement
+    //     );
+
+    //     if (firstElement < secondElement) {
+    //         return 1;
+    //     }
+    //     if (firstElement > secondElement) {
+    //         return -1;
+    //     }
+    //     return 0;
+    // });
+
+    allChars.sort();
+
+    return [...allChars, ...allNumbers];
+};
 
 //All validations
 const isArgumentArray = (arr) => {
@@ -139,6 +194,32 @@ const doesArrayHasAllNumbers = (arr) => {
 
     if (!isAllElementsNumbers) {
         throw "Error: All elements in an array must be numbers.";
+    }
+};
+
+const doesArrayHasNumbersOrChars = (arr) => {
+    const isAllElementsNumbersAndChars = Array.from(arr).every(
+        (currentElement) => {
+            //check for number
+            if (typeof currentElement === "number" && !isNaN(currentElement)) {
+                return true;
+            }
+
+            //check for character
+            if (
+                typeof currentElement === "string" &&
+                currentElement.toLowerCase() !== currentElement.toUpperCase() &&
+                currentElement.length === 1
+            ) {
+                return true;
+            }
+
+            return false;
+        }
+    );
+
+    if (!isAllElementsNumbersAndChars) {
+        throw "Error: Elements in an array must be numbers or characters.";
     }
 };
 
