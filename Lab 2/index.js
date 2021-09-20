@@ -25,8 +25,14 @@ const stringUtils = require("./stringUtils");
 //     console.error(error);
 // }
 
+// try {
+//     console.log(stringUtils.sortString("123 FOO BAR!"));
+// } catch (error) {
+//     console.error(error);
+// }
+
 try {
-    console.log(stringUtils.sortString("098765432110124"));
+    console.log(stringUtils.replaceChar("Daddy", 2));
 } catch (error) {
     console.error(error);
 }
