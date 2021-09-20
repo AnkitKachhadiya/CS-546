@@ -76,7 +76,41 @@ const replaceChar = (str, identifierIndex) => {
     return resultantString;
 };
 
-const mashUp = (str1, str2, char) => {};
+const mashUp = (str1, str2, char) => {
+    isArgumentString(str1);
+    isStringEmpty(str1);
+
+    isArgumentString(str2);
+    isStringEmpty(str2);
+
+    isCharValid(char);
+
+    const lengthOfFirstString = str1.length;
+    const lengthOfSecondString = str2.length;
+
+    const maxStringLength =
+        lengthOfFirstString > lengthOfSecondString
+            ? lengthOfFirstString
+            : lengthOfSecondString;
+
+    const firstString =
+        lengthOfFirstString > lengthOfSecondString
+            ? str1
+            : str1.padEnd(maxStringLength, char);
+
+    const secondString =
+        lengthOfFirstString > lengthOfSecondString
+            ? str2.padEnd(maxStringLength, char)
+            : str2;
+
+    let resultantString = "";
+
+    for (let iterator = 0; iterator < maxStringLength; iterator++) {
+        resultantString += firstString[iterator] + secondString[iterator];
+    }
+
+    return resultantString;
+};
 
 //All validations
 const isArgumentString = (str) => {
@@ -104,6 +138,16 @@ const isIndexValid = (str, identifierIndex) => {
 const isStringLengthValid = (str, minimumRequiredLength) => {
     if (str.length < minimumRequiredLength) {
         throw `Error: minimum string length should be ${minimumRequiredLength}.`;
+    }
+};
+
+const isCharValid = (char) => {
+    if (typeof char !== "string") {
+        throw "Error: Invalid argument passed. Expected character.";
+    }
+
+    if (char.length !== 1) {
+        throw "Error: Length of the character should be 1.";
     }
 };
 
