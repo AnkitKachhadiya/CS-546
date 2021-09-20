@@ -74,7 +74,7 @@ const medianElement = (arr) => {
 
     const unsortedArr = [...arr];
 
-    arr.sort();
+    arr.sort(sortNumbers);
     const result = {};
 
     let median;
@@ -129,37 +129,28 @@ const merge = (arrOne, arrTwo) => {
     doesArrayHasNumbersOrChars(arrTwo);
 
     const mergedArr = [...arrOne, ...arrTwo];
-    const allChars = [];
+    const allLowerCaseChars = [];
+    const allUpperCaseChars = [];
     const allNumbers = [];
 
     mergedArr.forEach((currentElement) => {
         if (typeof currentElement === "number") {
             allNumbers.push(currentElement);
+            return;
+        }
+
+        if (currentElement === currentElement.toLowerCase()) {
+            allLowerCaseChars.push(currentElement);
         } else {
-            allChars.push(currentElement);
+            allUpperCaseChars.push(currentElement);
         }
     });
 
-    allNumbers.sort();
+    allLowerCaseChars.sort();
+    allUpperCaseChars.sort();
+    allNumbers.sort(sortNumbers);
 
-    // allChars.sort((firstElement, secondElement) => {
-    //     console.log(
-    //         { firstElement, secondElement },
-    //         firstElement > secondElement
-    //     );
-
-    //     if (firstElement < secondElement) {
-    //         return 1;
-    //     }
-    //     if (firstElement > secondElement) {
-    //         return -1;
-    //     }
-    //     return 0;
-    // });
-
-    allChars.sort();
-
-    return [...allChars, ...allNumbers];
+    return [...allLowerCaseChars, ...allUpperCaseChars, ...allNumbers];
 };
 
 //All validations
@@ -221,6 +212,10 @@ const doesArrayHasNumbersOrChars = (arr) => {
     if (!isAllElementsNumbersAndChars) {
         throw "Error: Elements in an array must be numbers or characters.";
     }
+};
+
+const sortNumbers = (firstElement, secondElement) => {
+    return firstElement - secondElement;
 };
 
 module.exports = {
