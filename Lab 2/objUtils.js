@@ -27,9 +27,71 @@ const computeObjects = (arr, computingFunction) => {
     return result;
 };
 
-const commonKeys = (obj1, obj2) => {};
+const commonKeys = (obj1, obj2) => {
+    isArgumentObject(obj1);
+    isArgumentObject(obj2);
+
+    if (Object.keys(obj1).length < 1 || Object.keys(obj2).length < 1) {
+        return {};
+    }
+
+    const allKeys = getCommonKeys(obj1, obj2);
+
+    return allKeys;
+};
 
 const flipObject = (obj) => {};
+
+const getCommonKeys = (obj1, obj2) => {
+    const result = {};
+
+    for (const currentProperty in obj1) {
+        //key not present in second object then no need to go further
+        if (obj2[currentProperty] === undefined) {
+            continue;
+        }
+
+        //if both values matches then store it
+        if (obj1[currentProperty] === obj2[currentProperty]) {
+            result[currentProperty] = obj1[currentProperty];
+            continue;
+        }
+
+        if (
+            Array.isArray(obj1[currentProperty]) &&
+            Array.isArray(obj2[currentProperty])
+        ) {
+            // do something;
+        }
+
+        if (
+            isObject(obj1[currentProperty]) &&
+            isObject(obj2[currentProperty])
+        ) {
+            let mediatorResult = getCommonKeys(
+                obj1[currentProperty],
+                obj2[currentProperty]
+            );
+
+            if (Object.keys(mediatorResult).length > 0) {
+                result[currentProperty] = mediatorResult;
+            }
+        }
+
+        //solution for including empty objects or {}
+        // if (
+        //     isObject(obj1[currentProperty]) &&
+        //     isObject(obj2[currentProperty])
+        // ) {
+        //     result[currentProperty] = getCommonKeys(
+        //         obj1[currentProperty],
+        //         obj2[currentProperty]
+        //     );
+        // }
+    }
+
+    return result;
+};
 
 //All validations
 const isArgumentArray = (arr) => {
@@ -85,6 +147,22 @@ const isArgumentFunction = (func) => {
     ) {
         throw "Error: Invalid argument passed. Expected function.";
     }
+};
+
+const isArgumentObject = (obj) => {
+    if (!isObject(obj)) {
+        throw "Error: Invalid argument passed. Expected object.";
+    }
+};
+
+const isObject = (obj) => {
+    return (
+        !Array.isArray(obj) &&
+        typeof obj === "object" &&
+        obj !== null &&
+        obj instanceof Object &&
+        obj.constructor === Object
+    );
 };
 
 module.exports = {

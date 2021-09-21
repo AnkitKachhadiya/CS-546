@@ -149,6 +149,10 @@ const isCharValid = (char) => {
     if (char.length !== 1) {
         throw "Error: Length of the character should be 1.";
     }
+
+    if (!char.trim()) {
+        throw "Error: Character cannot be empty.";
+    }
 };
 
 module.exports = {
