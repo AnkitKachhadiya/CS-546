@@ -43,3 +43,17 @@ const objUtils = require("./objUtils");
 // } catch (error) {
 //     console.error(error);
 // }
+
+try {
+    console.log(
+        objUtils.computeObjects(
+            [
+                { x: 2, y: 3 },
+                { a: 70, x: 4, z: 5 },
+            ],
+            (x) => x * 2
+        )
+    );
+} catch (error) {
+    console.error(error);
+}
