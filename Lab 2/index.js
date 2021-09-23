@@ -81,8 +81,8 @@ const objUtils = require("./objUtils");
 try {
     console.log(
         objUtils.commonKeys(
-            { a: 1, b: { x: 10 }, c: {} },
-            { a: 2, b: { x: 9, y: 9 }, c: {} }
+            { a: 2, b: { x: 7, c: { b: {}, d: 1 } } },
+            { a: 3, b: { x: 7, y: 10, c: { b: {}, d: 2 } } }
         )
     );
 } catch (error) {

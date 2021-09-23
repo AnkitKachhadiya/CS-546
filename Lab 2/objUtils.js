@@ -64,30 +64,40 @@ const getCommonKeys = (obj1, obj2) => {
             // do something;
         }
 
-        if (
-            isObject(obj1[currentProperty]) &&
-            isObject(obj2[currentProperty])
-        ) {
-            let mediatorResult = getCommonKeys(
-                obj1[currentProperty],
-                obj2[currentProperty]
-            );
-
-            if (Object.keys(mediatorResult).length > 0) {
-                result[currentProperty] = mediatorResult;
-            }
-        }
-
-        //solution for including empty objects or {}
+        // alternate approach
         // if (
         //     isObject(obj1[currentProperty]) &&
         //     isObject(obj2[currentProperty])
         // ) {
-        //     result[currentProperty] = getCommonKeys(
+        //     const mediatorResult = getCommonKeys(
         //         obj1[currentProperty],
         //         obj2[currentProperty]
         //     );
+
+        //     if (Object.keys(mediatorResult).length > 0) {
+        //         result[currentProperty] = mediatorResult;
+        //     }
         // }
+
+        //solution for including empty objects or {}
+        if (
+            isObject(obj1[currentProperty]) &&
+            isObject(obj2[currentProperty])
+        ) {
+            const mediatorResult = getCommonKeys(
+                obj1[currentProperty],
+                obj2[currentProperty]
+            );
+
+            if (
+                Object.keys(obj1[currentProperty]).length > 0 &&
+                Object.keys(mediatorResult).length < 1
+            ) {
+                continue;
+            }
+
+            result[currentProperty] = mediatorResult;
+        }
     }
 
     return result;
