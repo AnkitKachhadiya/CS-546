@@ -1,6 +1,6 @@
 const computeObjects = (arr, computingFunction) => {
     isArgumentArray(arr);
-    isArrayEmpty(arr);
+    isArgumentArrayEmpty(arr);
     doesArrayHasAllObjects(arr);
     doesArrayOfObjectHasValues(arr);
 
@@ -40,7 +40,50 @@ const commonKeys = (obj1, obj2) => {
     return allKeys;
 };
 
-const flipObject = (obj) => {};
+const flipObject = (obj) => {
+    isArgumentObject(obj);
+    isObjectEmpty(obj);
+    doesObjectHasValidValues(obj);
+
+    return getItFlipped(obj);
+};
+
+const getItFlipped = (obj) => {
+    const result = {};
+
+    for (const currentProperty in obj) {
+        const objectValue = obj[currentProperty];
+
+        if (Array.isArray(objectValue)) {
+            if (isArrayEmpty(objectValue)) {
+                throw "Error: Value cannot be empty array.";
+            }
+
+            doesArrayHasNumbersOrStrings(objectValue);
+
+            objectValue.forEach((currentElement) => {
+                result[currentElement] = currentProperty;
+            });
+
+            continue;
+        }
+
+        if (isObject(objectValue)) {
+            if (isObjectEmpty(objectValue)) {
+                throw "Error: Value cannot be empty object.";
+            }
+
+            doesObjectHasValidValues(objectValue);
+
+            result[currentProperty] = getItFlipped(objectValue);
+            continue;
+        }
+
+        result[objectValue] = currentProperty;
+    }
+
+    return result;
+};
 
 const getCommonKeys = (obj1, obj2) => {
     const result = {};
@@ -62,22 +105,11 @@ const getCommonKeys = (obj1, obj2) => {
             Array.isArray(obj2[currentProperty])
         ) {
             // do something;
+
+            if (isBothArraySame(obj1[currentProperty], obj2[currentProperty])) {
+                result[currentProperty] = obj1[currentProperty];
+            }
         }
-
-        // alternate approach
-        // if (
-        //     isObject(obj1[currentProperty]) &&
-        //     isObject(obj2[currentProperty])
-        // ) {
-        //     const mediatorResult = getCommonKeys(
-        //         obj1[currentProperty],
-        //         obj2[currentProperty]
-        //     );
-
-        //     if (Object.keys(mediatorResult).length > 0) {
-        //         result[currentProperty] = mediatorResult;
-        //     }
-        // }
 
         //solution for including empty objects or {}
         if (
@@ -90,7 +122,8 @@ const getCommonKeys = (obj1, obj2) => {
             );
 
             if (
-                Object.keys(obj1[currentProperty]).length > 0 &&
+                (Object.keys(obj1[currentProperty]).length > 0 ||
+                    Object.keys(obj2[currentProperty]).length > 0) &&
                 Object.keys(mediatorResult).length < 1
             ) {
                 continue;
@@ -110,10 +143,14 @@ const isArgumentArray = (arr) => {
     }
 };
 
-const isArrayEmpty = (arr) => {
-    if (arr.length < 1) {
+const isArgumentArrayEmpty = (arr) => {
+    if (isArrayEmpty(arr)) {
         throw "Error: Empty array passed.";
     }
+};
+
+const isArrayEmpty = (arr) => {
+    return arr.length < 1;
 };
 
 const doesArrayHasAllObjects = (arr) => {
@@ -173,6 +210,84 @@ const isObject = (obj) => {
         obj instanceof Object &&
         obj.constructor === Object
     );
+};
+
+const isObjectEmpty = (obj) => {
+    if (Object.keys(obj).length < 1) {
+        throw "Error: Empty object passed.";
+    }
+};
+
+const doesObjectHasValidValues = (obj) => {
+    const hasInvalidElements = Object.values(obj).some((currentElement) => {
+        return (
+            typeof currentElement === "boolean" ||
+            currentElement === null ||
+            currentElement === undefined ||
+            currentElement === NaN ||
+            isStringEmpty(currentElement)
+        );
+    });
+
+    if (hasInvalidElements) {
+        throw "Error: Element(s) in an object is not valid.";
+    }
+};
+
+const isStringEmpty = (str) => {
+    return typeof str === "string" && str.trim().length < 1;
+};
+
+const doesArrayHasNumbersOrStrings = (arr) => {
+    const isAllElementsNumbersOrStrings = Array.from(arr).every(
+        (currentElement) => {
+            if (typeof currentElement === "number" && !isNaN(currentElement)) {
+                return true;
+            }
+
+            if (typeof currentElement === "string") {
+                return true;
+            }
+
+            return false;
+        }
+    );
+
+    if (!isAllElementsNumbersOrStrings) {
+        throw "Error: Elements in an array must be numbers or strings.";
+    }
+};
+
+const isBothArraySame = (arr1, arr2) => {
+    return arr1.every(function (currentElement, currentIndex) {
+        //check for normal array with array in it
+        if (
+            Array.isArray(currentElement) &&
+            Array.isArray(arr2[currentIndex])
+        ) {
+            return isBothArraySame(currentElement, arr2[currentIndex]);
+        }
+
+        //check for nested array with object in it
+        if (isObject(currentElement) && isObject(arr2[currentIndex])) {
+            const mediatorResult = getCommonKeys(
+                currentElement,
+                arr2[currentIndex]
+            );
+
+            if (
+                (Object.keys(currentElement).length > 0 ||
+                    Object.keys(arr2[currentIndex]).length > 0) &&
+                Object.keys(mediatorResult).length < 1
+            ) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return currentElement === arr2[currentIndex];
+        }
+    });
 };
 
 module.exports = {
