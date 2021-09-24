@@ -224,8 +224,7 @@ const doesObjectHasValidValues = (obj) => {
             typeof currentElement === "boolean" ||
             currentElement === null ||
             currentElement === undefined ||
-            currentElement === NaN ||
-            isStringEmpty(currentElement)
+            currentElement === NaN
         );
     });
 
