@@ -1,11 +1,21 @@
 const people = require("./people");
 
 async function main() {
+    // try {
+    //     const person = await people.getPersonById(
+    //         "4a3f87d3-20d8-42e2-b127-de6e29399250"
+    //     );
+    //     console.log(person);
+    // } catch (error) {
+    //     console.log(error);
+    // }
+
     try {
-        const person = await people.getPersonById(
-            "e5e62215-0e56-4ddd-8cbd-a6a4ded87eff"
+        const peopleWithSameStreet = await people.sameStreet(
+            "Sutherland",
+            "Point"
         );
-        console.log(person);
+        console.dir(peopleWithSameStreet, { depth: null });
     } catch (error) {
         console.log(error);
     }
