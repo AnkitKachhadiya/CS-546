@@ -42,12 +42,16 @@ const sameStreet = async (streetName, streetSuffix) => {
 
         const result = people.filter((currentPerson) => {
             const doesMatchHome =
-                currentPerson.address.home.street_name === streetName &&
-                currentPerson.address.home.street_suffix === streetSuffix;
+                currentPerson.address.home.street_name.toLowerCase() ===
+                    streetName.toLowerCase() &&
+                currentPerson.address.home.street_suffix.toLowerCase() ===
+                    streetSuffix.toLowerCase();
 
             const doesMatchWork =
-                currentPerson.address.work.street_name === streetName &&
-                currentPerson.address.work.street_suffix === streetSuffix;
+                currentPerson.address.work.street_name.toLowerCase() ===
+                    streetName.toLowerCase() &&
+                currentPerson.address.work.street_suffix.toLowerCase() ===
+                    streetSuffix.toLowerCase();
 
             if (doesMatchHome || doesMatchWork) {
                 return true;
@@ -61,6 +65,59 @@ const sameStreet = async (streetName, streetSuffix) => {
         }
 
         throw `Error: There are not at least two people that live or work on ${streetName} ${streetSuffix}.`;
+    } catch (error) {
+        throw error;
+    }
+};
+
+const manipulateSsn = async () => {
+    try {
+        const people = await allPeople();
+
+        let highestSsn = 0;
+        let lowestSsn = 999999999;
+        let ssnTotal = 0;
+
+        const result = {};
+
+        people.forEach((currentPerson) => {
+            //eg. '987-654-3210'
+            const ssn = currentPerson.ssn;
+
+            //eg. '9876543210'
+            const nonDashedSsn = ssn.replace(/-/g, "");
+
+            //eg. '9876543210'
+            // => (convert to array) arr['9', '8', '7', ....]
+            // => (sort) arr['0', '1', '2', ....]
+            // => (join) 0123456789
+            // => (parseInt) 123456789
+            const sortedSsn = parseInt(nonDashedSsn.split("").sort().join(""));
+
+            if (sortedSsn > highestSsn) {
+                highestSsn = sortedSsn;
+                result.highest = {
+                    firstName: currentPerson.first_name,
+                    lastName: currentPerson.last_name,
+                };
+            }
+
+            if (sortedSsn < lowestSsn) {
+                lowestSsn = sortedSsn;
+                result.lowest = {
+                    firstName: currentPerson.first_name,
+                    lastName: currentPerson.last_name,
+                };
+            }
+
+            ssnTotal += sortedSsn;
+        });
+
+        const ssnAverage = Math.floor(ssnTotal / people.length);
+
+        result.average = ssnAverage;
+
+        return result;
     } catch (error) {
         throw error;
     }
@@ -86,4 +143,5 @@ const isStringEmpty = (str, variableName) => {
 module.exports = {
     getPersonById,
     sameStreet,
+    manipulateSsn,
 };

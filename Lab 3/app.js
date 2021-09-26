@@ -10,12 +10,19 @@ async function main() {
     //     console.log(error);
     // }
 
+    // try {
+    //     const peopleWithSameStreet = await people.sameStreet(
+    //         "sutherland",
+    //         "point"
+    //     );
+    //     console.dir(peopleWithSameStreet, { depth: null });
+    // } catch (error) {
+    //     console.log(error);
+    // }
+
     try {
-        const peopleWithSameStreet = await people.sameStreet(
-            "Sutherland",
-            "Point"
-        );
-        console.dir(peopleWithSameStreet, { depth: null });
+        const ssnManipulations = await people.manipulateSsn();
+        console.log(ssnManipulations);
     } catch (error) {
         console.log(error);
     }
