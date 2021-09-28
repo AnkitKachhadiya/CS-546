@@ -123,6 +123,50 @@ const manipulateSsn = async () => {
     }
 };
 
+const sameBirthday = async (month, day) => {
+    try {
+        const intMonth = toInteger(month, "month");
+        const intDay = toInteger(day, "day");
+
+        isMonthValid(intMonth);
+        isDayValid(intDay);
+
+        doesFebruaryHasValidDate(intMonth, intDay);
+
+        const birthDay = isBirthDateValid(intMonth, intDay);
+
+        const people = await allPeople();
+
+        const result = [];
+
+        people.forEach((currentPerson) => {
+            const personDateOfBirth = currentPerson.date_of_birth;
+
+            const arrayedDateOfBirth = personDateOfBirth.split("/");
+
+            if (
+                intMonth === parseInt(arrayedDateOfBirth[0]) &&
+                intDay === parseInt(arrayedDateOfBirth[1])
+            ) {
+                result.push(
+                    `${currentPerson.first_name} ${currentPerson.last_name}`
+                );
+            }
+        });
+
+        if (result.length > 0) {
+            return result;
+        }
+
+        throw `Error: There are no people with birth day ${birthDay.getDate()} ${birthDay.toLocaleString(
+            "default",
+            { month: "long" }
+        )}.`;
+    } catch (error) {
+        throw error;
+    }
+};
+
 //All validations
 const isArgumentString = (str, variableName) => {
     if (typeof str !== "string") {
@@ -140,8 +184,78 @@ const isStringEmpty = (str, variableName) => {
     }
 };
 
+const toInteger = (argument, variableName) => {
+    if (
+        typeof argument === "number" &&
+        !isNaN(argument) &&
+        argument % 1 === 0
+    ) {
+        return argument;
+    }
+
+    if (
+        typeof argument === "number" &&
+        !isNaN(argument) &&
+        argument % 1 !== 0
+    ) {
+        throw `Error: ${argument} is not a valid ${variableName}.`;
+    }
+
+    const integer = parseInt(argument, 10);
+
+    if (isNaN(integer)) {
+        throw `Error: Invalid argument passed for ${
+            variableName || "provided variable"
+        }. Expected valid string or whole number.`;
+    }
+
+    return integer;
+};
+
+const isMonthValid = (month) => {
+    if (month < 1 || month > 12) {
+        throw `Error: ${month} is invalid month.`;
+    }
+};
+
+const isDayValid = (day) => {
+    if (day < 1 || day > 31) {
+        throw `Error: ${day} is invalid day.`;
+    }
+};
+
+const doesFebruaryHasValidDate = (month, day) => {
+    if (month !== 2) {
+        return;
+    }
+
+    if (day >= 29) {
+        throw `Error: There are not ${day} days in February.`;
+    }
+};
+
+const isBirthDateValid = (month, day) => {
+    const firstOfMonth = new Date(new Date().getFullYear(), month - 1, 1);
+
+    const birthDate = new Date(firstOfMonth.getFullYear(), month - 1, day);
+
+    if (!(birthDate instanceof Date) || isNaN(birthDate.valueOf())) {
+        throw "Error: Invalid month or day.";
+    }
+
+    if (day !== birthDate.getDate()) {
+        throw `Error: There are not ${day} days in ${firstOfMonth.toLocaleString(
+            "default",
+            { month: "long" }
+        )}`;
+    }
+
+    return birthDate;
+};
+
 module.exports = {
     getPersonById,
     sameStreet,
     manipulateSsn,
+    sameBirthday,
 };

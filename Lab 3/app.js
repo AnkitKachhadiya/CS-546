@@ -20,9 +20,16 @@ async function main() {
     //     console.log(error);
     // }
 
+    // try {
+    //     const ssnManipulations = await people.manipulateSsn();
+    //     console.log(ssnManipulations);
+    // } catch (error) {
+    //     console.log(error);
+    // }
+
     try {
-        const ssnManipulations = await people.manipulateSsn();
-        console.log(ssnManipulations);
+        const peopleWithSameBirthday = await people.sameBirthday(9, 30);
+        console.log(peopleWithSameBirthday);
     } catch (error) {
         console.log(error);
     }
