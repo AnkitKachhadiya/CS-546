@@ -70,7 +70,11 @@ const sameStreet = async (streetName, streetSuffix) => {
     }
 };
 
-const manipulateSsn = async () => {
+async function manipulateSsn() {
+    if (arguments.length > 0) {
+        throw "Error: This function doesn't require to pass parameters.";
+    }
+
     try {
         const people = await allPeople();
 
@@ -121,7 +125,7 @@ const manipulateSsn = async () => {
     } catch (error) {
         throw error;
     }
-};
+}
 
 const sameBirthday = async (month, day) => {
     try {

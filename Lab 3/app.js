@@ -1,4 +1,5 @@
 const people = require("./people");
+const stocks = require("./stocks");
 
 async function main() {
     // try {
@@ -27,9 +28,16 @@ async function main() {
     //     console.log(error);
     // }
 
+    // try {
+    //     const peopleWithSameBirthday = await people.sameBirthday(9, 30);
+    //     console.log(peopleWithSameBirthday);
+    // } catch (error) {
+    //     console.log(error);
+    // }
+
     try {
-        const peopleWithSameBirthday = await people.sameBirthday(9, 30);
-        console.log(peopleWithSameBirthday);
+        const allShareHolders = await stocks.listShareholders();
+        console.dir(allShareHolders, { depth: null });
     } catch (error) {
         console.log(error);
     }
