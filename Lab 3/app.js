@@ -42,17 +42,17 @@ async function main() {
     //     console.log(error);
     // }
 
-    // try {
-    //     const topShareholder = await stocks.topShareholder(
-    //         "Aeglea BioTherapeutics, Inc."
-    //     );
-    //     console.log(topShareholder);
-    // } catch (error) {
-    //     console.log(error);
-    // }
+    try {
+        const topShareholder = await stocks.topShareholder(
+            "Fomento Economico Mexicano S.A.B. de C.V."
+        );
+        console.log(topShareholder);
+    } catch (error) {
+        console.log(error);
+    }
 
     try {
-        const userStockList = await stocks.listStocks("Grenville", "Pawelke");
+        const userStockList = await stocks.listStocks("Artemis", "MacIllrick");
         console.log(userStockList);
     } catch (error) {
         console.log(error);

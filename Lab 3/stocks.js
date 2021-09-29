@@ -55,50 +55,56 @@ async function listShareholders() {
         }
 
         return stocks;
-    } catch (error) {}
+    } catch (error) {
+        throw error;
+    }
 }
 
 const topShareholder = async (stockName) => {
     isArgumentString(stockName, "stock name");
     isStringEmpty(stockName, "stock name");
 
-    const stocks = await allStocks();
-    const people = await allPeople();
+    try {
+        const stocks = await allStocks();
+        const people = await allPeople();
 
-    const [stock] = stocks.filter((currentStock) => {
-        return currentStock.stock_name === stockName;
-    });
+        const [stock] = stocks.filter((currentStock) => {
+            return currentStock.stock_name === stockName;
+        });
 
-    if (!stock) {
-        throw `Error: There is no stock with name ${stockName}`;
-    }
-
-    if (stock.shareholders.length < 1) {
-        throw `${stockName} currently has no shareholders.`;
-    }
-
-    let maxShares = 0;
-    let indexOfMaxShareholder;
-
-    stock.shareholders.forEach((currentShareholder, currentIndex) => {
-        if (maxShares < currentShareholder.number_of_shares) {
-            maxShares = currentShareholder.number_of_shares;
-            indexOfMaxShareholder = currentIndex;
+        if (!stock) {
+            throw `Error: There is no stock with name ${stockName}`;
         }
-    });
 
-    const [person] = people.filter((currentPerson) => {
-        return (
-            currentPerson.id ===
-            stock.shareholders[indexOfMaxShareholder].userId
-        );
-    });
+        if (stock.shareholders.length < 1) {
+            throw `${stockName} currently has no shareholders.`;
+        }
 
-    if (!person) {
-        throw `No shareholder found for stock ${stockName}`;
+        let maxShares = 0;
+        let indexOfMaxShareholder;
+
+        stock.shareholders.forEach((currentShareholder, currentIndex) => {
+            if (maxShares < currentShareholder.number_of_shares) {
+                maxShares = currentShareholder.number_of_shares;
+                indexOfMaxShareholder = currentIndex;
+            }
+        });
+
+        const [person] = people.filter((currentPerson) => {
+            return (
+                currentPerson.id ===
+                stock.shareholders[indexOfMaxShareholder].userId
+            );
+        });
+
+        if (!person) {
+            throw `No shareholder found for stock ${stockName}`;
+        }
+
+        return `With ${stock.shareholders[indexOfMaxShareholder].number_of_shares} shares in ${stockName}, ${person.first_name} ${person.last_name} is the top shareholder.`;
+    } catch (error) {
+        throw error;
     }
-
-    return `With ${stock.shareholders[indexOfMaxShareholder].number_of_shares} shares in ${stockName}, ${person.first_name} ${person.last_name} is the top shareholder.`;
 };
 
 const listStocks = async (firstName, lastName) => {
@@ -107,6 +113,43 @@ const listStocks = async (firstName, lastName) => {
 
     isArgumentString(lastName, "last name");
     isStringEmpty(lastName, "last name");
+
+    try {
+        const stocks = await allStocks();
+        const people = await allPeople();
+
+        const [person] = people.filter((currentPerson) => {
+            return (
+                currentPerson.first_name === firstName &&
+                currentPerson.last_name === lastName
+            );
+        });
+
+        if (!person) {
+            throw `Error: There is no person with name ${firstName} ${lastName}.`;
+        }
+
+        const result = [];
+
+        for (const currentStock of stocks) {
+            if (currentStock.shareholders.length < 1) {
+                continue;
+            }
+
+            currentStock.shareholders.forEach((currentShareholder) => {
+                if (currentShareholder.userId === person.id) {
+                    result.push({
+                        stock_name: currentStock.stock_name,
+                        number_of_shares: currentShareholder.number_of_shares,
+                    });
+                }
+            });
+        }
+
+        return result;
+    } catch (error) {
+        throw error;
+    }
 };
 
 //All validations
