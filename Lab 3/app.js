@@ -35,9 +35,25 @@ async function main() {
     //     console.log(error);
     // }
 
+    // try {
+    //     const allShareHolders = await stocks.listShareholders();
+    //     console.dir(allShareHolders, { depth: null });
+    // } catch (error) {
+    //     console.log(error);
+    // }
+
+    // try {
+    //     const topShareholder = await stocks.topShareholder(
+    //         "Aeglea BioTherapeutics, Inc."
+    //     );
+    //     console.log(topShareholder);
+    // } catch (error) {
+    //     console.log(error);
+    // }
+
     try {
-        const allShareHolders = await stocks.listShareholders();
-        console.dir(allShareHolders, { depth: null });
+        const userStockList = await stocks.listStocks("Grenville", "Pawelke");
+        console.log(userStockList);
     } catch (error) {
         console.log(error);
     }
