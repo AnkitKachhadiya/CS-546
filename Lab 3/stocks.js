@@ -152,6 +152,23 @@ const listStocks = async (firstName, lastName) => {
     }
 };
 
+const getStockById = async (id) => {
+    isArgumentString(id, "id");
+    isStringEmpty(id, "id");
+
+    const stocks = await allStocks();
+
+    const stock = stocks.find((currentStock) => {
+        return currentStock.id === id;
+    });
+
+    if (!stock || Object.keys(stock).length < 1) {
+        throw "Stock not found";
+    }
+
+    return stock;
+};
+
 //All validations
 const isArgumentString = (str, variableName) => {
     if (typeof str !== "string") {
@@ -173,4 +190,5 @@ module.exports = {
     listShareholders,
     topShareholder,
     listStocks,
+    getStockById,
 };
