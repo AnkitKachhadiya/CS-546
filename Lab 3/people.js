@@ -19,7 +19,7 @@ const getPersonById = async (id) => {
         const people = await allPeople();
 
         for (const currentPerson of people) {
-            if (currentPerson.id === id) {
+            if (currentPerson.id === id.trim()) {
                 return currentPerson;
             }
         }
@@ -30,12 +30,15 @@ const getPersonById = async (id) => {
     }
 };
 
-const sameStreet = async (streetName, streetSuffix) => {
-    isArgumentString(streetName, "street name");
-    isStringEmpty(streetName, "street name");
+const sameStreet = async (_streetName, _streetSuffix) => {
+    isArgumentString(_streetName, "street name");
+    isStringEmpty(_streetName, "street name");
 
-    isArgumentString(streetSuffix, "street suffix");
-    isStringEmpty(streetSuffix, "street suffix");
+    isArgumentString(_streetSuffix, "street suffix");
+    isStringEmpty(_streetSuffix, "street suffix");
+
+    const streetName = _streetName.trim();
+    const streetSuffix = _streetSuffix.trim();
 
     try {
         const people = await allPeople();

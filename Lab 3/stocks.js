@@ -31,7 +31,7 @@ async function listShareholders() {
         const stocks = await allStocks();
         const people = await allPeople();
 
-        for (currentStock of stocks) {
+        for (const currentStock of stocks) {
             if (currentStock.shareholders.length < 1) {
                 continue;
             }
@@ -40,7 +40,7 @@ async function listShareholders() {
 
             currentStock.shareholders = [];
 
-            for (currentShareholder of shareholders) {
+            for (const currentShareholder of shareholders) {
                 people.find((currentPerson) => {
                     if (currentPerson.id === currentShareholder.userId) {
                         currentStock.shareholders.push({
@@ -60,9 +60,11 @@ async function listShareholders() {
     }
 }
 
-const topShareholder = async (stockName) => {
-    isArgumentString(stockName, "stock name");
-    isStringEmpty(stockName, "stock name");
+const topShareholder = async (_stockName) => {
+    isArgumentString(_stockName, "stock name");
+    isStringEmpty(_stockName, "stock name");
+
+    const stockName = _stockName.trim();
 
     try {
         const stocks = await allStocks();
@@ -107,12 +109,15 @@ const topShareholder = async (stockName) => {
     }
 };
 
-const listStocks = async (firstName, lastName) => {
-    isArgumentString(firstName, "first name");
-    isStringEmpty(firstName, "first name");
+const listStocks = async (_firstName, _lastName) => {
+    isArgumentString(_firstName, "first name");
+    isStringEmpty(_firstName, "first name");
 
-    isArgumentString(lastName, "last name");
-    isStringEmpty(lastName, "last name");
+    isArgumentString(_lastName, "last name");
+    isStringEmpty(_lastName, "last name");
+
+    const firstName = _firstName.trim();
+    const lastName = _lastName.trim();
 
     try {
         const stocks = await allStocks();
@@ -156,17 +161,21 @@ const getStockById = async (id) => {
     isArgumentString(id, "id");
     isStringEmpty(id, "id");
 
-    const stocks = await allStocks();
+    try {
+        const stocks = await allStocks();
 
-    const stock = stocks.find((currentStock) => {
-        return currentStock.id === id;
-    });
+        const stock = stocks.find((currentStock) => {
+            return currentStock.id === id.trim();
+        });
 
-    if (!stock || Object.keys(stock).length < 1) {
-        throw "Stock not found";
+        if (!stock || Object.keys(stock).length < 1) {
+            throw "Stock not found";
+        }
+
+        return stock;
+    } catch (error) {
+        throw error;
     }
-
-    return stock;
 };
 
 //All validations
