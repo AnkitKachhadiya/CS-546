@@ -38,7 +38,7 @@ async function create(
 
     const insertedInfo = await restaurantCollection.insertOne(newRestaurant);
 
-    if (insertedInfo.insertedCount === 0) {
+    if (insertedInfo.insertedCount !== 1) {
         throw "Error: Could not add restaurant.";
     }
 
