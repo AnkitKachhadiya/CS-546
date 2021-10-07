@@ -1,15 +1,15 @@
 {
-  "name": "cs-546-lab-4",
-  "version": "1.0.0",
-  "description": "Lab 4",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
-  },
-  "author": "Ankit Hasmukh Kachhadiya 20007140",
-  "license": "ISC",
-  "dependencies": {
-    "mongodb": "^3.6.2"
-  }
+    "name": "cs-546-lab-4",
+    "version": "1.0.0",
+    "description": "Lab 4",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node index.js"
+    },
+    "author": "Ankit Hasmukh Kachhadiya 20007140",
+    "license": "ISC",
+    "dependencies": {
+        "mongodb": "^3.6.2"
+    }
 }
