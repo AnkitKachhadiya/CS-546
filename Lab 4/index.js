@@ -105,7 +105,10 @@ async function main() {
     try {
         const restaurantList = await restaurants.getAll();
         if (restaurantList.length > 0) {
-            await restaurants.remove(restaurantList[1]._id);
+            const deletionInfo = await restaurants.remove(
+                restaurantList[1]._id
+            );
+            console.log(deletionInfo);
         }
     } catch (error) {
         console.log(error);

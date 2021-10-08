@@ -75,8 +75,8 @@ async function getAll() {
     return restaurantList;
 }
 
-async function get(restaurantId) {
-    validateRestaurantId(restaurantId);
+async function get(_restaurantId) {
+    const restaurantId = validateRestaurantId(_restaurantId);
 
     const parsedObjectId = validateObjectId(restaurantId);
 
