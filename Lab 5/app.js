@@ -1,12 +1,10 @@
-const { response } = require("express");
 const express = require("express");
 const app = express();
+const configRoutes = require("./routes");
 
 const PORT = 3000;
 
-app.get("/", (request, response) => {
-    response.send("Hello world");
-});
+configRoutes(app);
 
 app.listen(PORT, () => {
     console.log("running...");
