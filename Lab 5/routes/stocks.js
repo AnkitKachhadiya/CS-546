@@ -29,9 +29,7 @@ router.get("/:id", async (request, response) => {
 
 const restrictRequestQuery = (request, response) => {
     if (Object.keys(request.query).length > 0) {
-        response.status(400).send({
-            serverResponse: "Request query not allowed.",
-        });
+        throw { code: 400, message: "Request query not allowed." };
     }
 };
 
