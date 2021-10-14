@@ -5,6 +5,7 @@ const peopleData = data.people;
 
 router.get("/", async (request, response) => {
     try {
+        restrictRequestQuery(request, response);
         const people = await peopleData.allPeople();
         response.json(people);
     } catch (error) {
@@ -16,6 +17,7 @@ router.get("/", async (request, response) => {
 
 router.get("/:id", async (request, response) => {
     try {
+        restrictRequestQuery(request, response);
         const person = await peopleData.getPersonById(request.params.id);
         response.json(person);
     } catch (error) {
@@ -24,5 +26,13 @@ router.get("/:id", async (request, response) => {
         });
     }
 });
+
+const restrictRequestQuery = (request, response) => {
+    if (Object.keys(request.query).length > 0) {
+        response.status(400).send({
+            serverResponse: "Request query not allowed.",
+        });
+    }
+};
 
 module.exports = router;
