@@ -8,7 +8,9 @@ router.get("/", async (request, response) => {
         const stocks = await stocksData.allStocks();
         response.json(stocks);
     } catch (error) {
-        response.status(500).send({ serverResponse: error });
+        response.status(error.code || 500).send({
+            serverResponse: error.message || "Internal server error.",
+        });
     }
 });
 
@@ -17,7 +19,9 @@ router.get("/:id", async (request, response) => {
         const stock = await stocksData.getStockById(request.params.id);
         response.json(stock);
     } catch (error) {
-        response.status(500).send({ serverResponse: error });
+        response.status(error.code || 500).send({
+            serverResponse: error.message || "Internal server error.",
+        });
     }
 });
 
