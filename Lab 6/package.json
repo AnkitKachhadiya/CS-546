@@ -10,6 +10,7 @@
     "author": "Ankit Hasmukh Kachhadiya 20007140",
     "license": "ISC",
     "dependencies": {
+        "express": "^4.17.1",
         "mongodb": "^4.1.3"
     }
 }
