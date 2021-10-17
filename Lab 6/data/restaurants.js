@@ -30,6 +30,8 @@ async function create(
 
         const restaurantCollection = await restaurants();
 
+        //check for duplicate restaurants
+
         const newRestaurant = {
             name: name,
             location: location,

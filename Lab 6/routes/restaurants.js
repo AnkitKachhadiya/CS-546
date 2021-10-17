@@ -1,4 +1,5 @@
 const express = require("express");
+const { ObjectId } = require("mongodb");
 const router = express.Router();
 const data = require("../data");
 const restaurantsData = data.restaurants;
@@ -9,11 +10,12 @@ const ErrorCode = {
     INTERNAL_SERVER_ERROR: 500,
 };
 
+//get all restaurants
 router.get("/", async (request, response) => {
     try {
         restrictRequestQuery(request, response);
 
-        if (Object.keys(requestPostData).length !== 0) {
+        if (Object.keys(request.body).length !== 0) {
             throwError(
                 ErrorCode.BAD_REQUEST,
                 "Error: Doesn't require fields to be passed."
@@ -23,15 +25,17 @@ router.get("/", async (request, response) => {
         const restaurants = await restaurantsData.getAll();
         response.json(restaurants);
     } catch (error) {
-        response.status(error.code || 500).send({
+        response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
             serverResponse: error.message || "Internal server error.",
         });
     }
 });
 
+//create new restaurant
 router.post("/", async (request, response) => {
     try {
         const requestPostData = request.body;
+
         validateTotalFields(Object.keys(requestPostData).length);
 
         const name = validateName(requestPostData.name);
@@ -53,7 +57,32 @@ router.post("/", async (request, response) => {
         );
         response.json(newRestaurant);
     } catch (error) {
-        response.status(error.code || 500).send({
+        response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
+            serverResponse: error.message || "Internal server error.",
+        });
+    }
+});
+
+//get restaurant by id
+router.get("/:id", async (request, response) => {
+    try {
+        restrictRequestQuery(request, response);
+
+        if (Object.keys(request.body).length !== 0) {
+            throwError(
+                ErrorCode.BAD_REQUEST,
+                "Error: Doesn't require fields to be passed."
+            );
+        }
+
+        const restaurantId = validateRestaurantId(request.params.id);
+
+        validateObjectId(restaurantId);
+
+        const person = await restaurantsData.get(restaurantId);
+        response.json(person);
+    } catch (error) {
+        response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
             serverResponse: error.message || "Internal server error.",
         });
     }
