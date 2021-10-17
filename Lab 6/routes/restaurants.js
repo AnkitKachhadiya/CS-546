@@ -96,6 +96,7 @@ router.put("/:id", async (request, response) => {
         validateTotalFieldsUpdate(Object.keys(requestPostData).length);
 
         const restaurantId = validateRestaurantId(request.params.id);
+        validateObjectId(restaurantId);
         const name = validateName(requestPostData.name);
         const location = validateLocation(requestPostData.location);
         const phoneNumber = validatePhoneNumber(requestPostData.phoneNumber);
