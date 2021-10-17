@@ -36,7 +36,7 @@ router.post("/", async (request, response) => {
     try {
         const requestPostData = request.body;
 
-        validateTotalFields(Object.keys(requestPostData).length);
+        validateTotalFieldsCreate(Object.keys(requestPostData).length);
 
         const name = validateName(requestPostData.name);
         const location = validateLocation(requestPostData.location);
@@ -88,8 +88,51 @@ router.get("/:id", async (request, response) => {
     }
 });
 
+//update restaurant by id
+router.put("/:id", async (request, response) => {
+    try {
+        const requestPostData = request.body;
+
+        validateTotalFieldsUpdate(Object.keys(requestPostData).length);
+
+        const restaurantId = validateRestaurantId(request.params.id);
+        const name = validateName(requestPostData.name);
+        const location = validateLocation(requestPostData.location);
+        const phoneNumber = validatePhoneNumber(requestPostData.phoneNumber);
+        const website = validateWebsite(requestPostData.website);
+        const priceRange = validatePriceRange(requestPostData.priceRange);
+        const cuisines = validateCuisines(requestPostData.cuisines);
+        validateServiceOptions(requestPostData.serviceOptions);
+
+        const updatedRestaurant = await restaurantsData.update(
+            restaurantId,
+            name,
+            location,
+            phoneNumber,
+            website,
+            priceRange,
+            cuisines,
+            requestPostData.serviceOptions
+        );
+
+        response.json(updatedRestaurant);
+    } catch (error) {
+        response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
+            serverResponse: error.message || "Internal server error.",
+        });
+    }
+});
+
 //All validations
-const validateTotalFields = (totalFields) => {
+const validateTotalFieldsCreate = (totalFields) => {
+    const TOTAL_MANDATORY_Fields = 7;
+
+    if (totalFields !== TOTAL_MANDATORY_Fields) {
+        throwError(ErrorCode.BAD_REQUEST, "Error: You must supply all fields.");
+    }
+};
+
+const validateTotalFieldsUpdate = (totalFields) => {
     const TOTAL_MANDATORY_Fields = 7;
 
     if (totalFields !== TOTAL_MANDATORY_Fields) {

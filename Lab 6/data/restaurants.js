@@ -18,7 +18,7 @@ async function create(
     serviceOptions
 ) {
     try {
-        validateTotalArguments(arguments.length);
+        validateTotalArgumentsCreate(arguments.length);
 
         const name = validateName(_name);
         const location = validateLocation(_location);
@@ -66,80 +66,116 @@ async function create(
 }
 
 async function getAll() {
-    if (arguments.length !== 0) {
-        throwError(
-            ErrorCode.BAD_REQUEST,
-            "Error: This function doesn't require to pass parameters."
-        );
-    }
+    try {
+        if (arguments.length !== 0) {
+            throwError(
+                ErrorCode.BAD_REQUEST,
+                "Error: This function doesn't require to pass parameters."
+            );
+        }
 
-    const restaurantCollection = await restaurants();
+        const restaurantCollection = await restaurants();
 
-    const restaurantList = await restaurantCollection
-        .aggregate([
-            {
-                $project: {
-                    _id: {
-                        $toString: "$_id",
+        const restaurantList = await restaurantCollection
+            .aggregate([
+                {
+                    $project: {
+                        _id: {
+                            $toString: "$_id",
+                        },
+                        name: 1,
                     },
-                    name: 1,
                 },
-            },
-        ])
-        .toArray();
+            ])
+            .toArray();
 
-    return restaurantList;
+        return restaurantList;
+    } catch (error) {
+        throwCatchError(error);
+    }
 }
 
 async function get(_restaurantId) {
-    const restaurantId = validateRestaurantId(_restaurantId);
+    try {
+        const restaurantId = validateRestaurantId(_restaurantId);
 
-    const parsedObjectId = validateObjectId(restaurantId);
+        const parsedObjectId = validateObjectId(restaurantId);
 
-    const restaurantCollection = await restaurants();
+        const restaurantCollection = await restaurants();
 
-    const restaurant = await restaurantCollection.findOne({
-        _id: parsedObjectId,
-    });
+        const restaurant = await restaurantCollection.findOne({
+            _id: parsedObjectId,
+        });
 
-    if (!restaurant) {
-        throwError(ErrorCode.NOT_FOUND, "Error: No restaurant with that id.");
+        if (!restaurant) {
+            throwError(
+                ErrorCode.NOT_FOUND,
+                "Error: No restaurant with that id."
+            );
+        }
+
+        restaurant._id = restaurant._id.toString();
+
+        return restaurant;
+    } catch (error) {
+        throwCatchError(error);
     }
-
-    restaurant._id = restaurant._id.toString();
-
-    return restaurant;
 }
 
 async function remove(restaurantId) {
-    const restaurant = await get(restaurantId);
+    try {
+        const restaurant = await get(restaurantId);
 
-    const restaurantCollection = await restaurants();
+        const restaurantCollection = await restaurants();
 
-    const deletedInfo = await restaurantCollection.deleteOne({
-        _id: ObjectId(restaurant._id),
-    });
+        const deletedInfo = await restaurantCollection.deleteOne({
+            _id: ObjectId(restaurant._id),
+        });
 
-    if (deletedInfo.deletedCount !== 1) {
-        throw `Could not delete restaurant with id ${restaurantId}`;
+        if (deletedInfo.deletedCount !== 1) {
+            throw `Could not delete restaurant with id ${restaurantId}`;
+        }
+
+        return `${restaurant.name} has been successfully deleted!`;
+    } catch (error) {
+        throwCatchError(error);
     }
-
-    return `${restaurant.name} has been successfully deleted!`;
 }
 
-async function rename(restaurantId, _newWebsite) {
-    const restaurant = await get(restaurantId);
+async function update(
+    id,
+    _name,
+    _location,
+    _phoneNumber,
+    _website,
+    _priceRange,
+    _cuisines,
+    serviceOptions
+) {
+    validateTotalArgumentsUpdate(arguments.length);
 
-    const newWebsite = validateWebsite(_newWebsite);
+    const name = validateName(_name);
+    const location = validateLocation(_location);
+    const phoneNumber = validatePhoneNumber(_phoneNumber);
+    const website = validateWebsite(_website);
+    const priceRange = validatePriceRange(_priceRange);
+    const cuisines = validateCuisines(_cuisines);
+    validateServiceOptions(serviceOptions);
 
-    if (restaurant.website === newWebsite) {
-        throw "Error: New website is same as old website.";
-    }
+    const restaurant = await get(id);
 
     const restaurantCollection = await restaurants();
 
     const toBeUpdated = {
-        website: newWebsite,
+        name: name,
+        location: location,
+        phoneNumber: phoneNumber,
+        website: website,
+        priceRange: priceRange,
+        cuisines: cuisines,
+        overallRating: restaurant.overallRating,
+        serviceOptions: serviceOptions,
+        reviews: restaurant.reviews,
     };
 
     const updatedInfo = await restaurantCollection.updateOne(
@@ -148,15 +184,29 @@ async function rename(restaurantId, _newWebsite) {
     );
 
     if (updatedInfo.modifiedCount !== 1) {
-        throw "Error: Could not update restaurant.";
+        throwError(
+            ErrorCode.INTERNAL_SERVER_ERROR,
+            "Error: Could not update restaurant."
+        );
     }
 
-    return await get(restaurantId);
+    return await get(id);
 }
 
 //All validations
-const validateTotalArguments = (totalArguments) => {
+const validateTotalArgumentsCreate = (totalArguments) => {
     const TOTAL_MANDATORY_ARGUMENTS = 7;
+
+    if (totalArguments !== TOTAL_MANDATORY_ARGUMENTS) {
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            "Error: All fields need to have valid values."
+        );
+    }
+};
+
+const validateTotalArgumentsUpdate = (totalArguments) => {
+    const TOTAL_MANDATORY_ARGUMENTS = 8;
 
     if (totalArguments !== TOTAL_MANDATORY_ARGUMENTS) {
         throwError(
@@ -408,5 +458,5 @@ module.exports = {
     getAll,
     get,
     remove,
-    rename,
+    update,
 };
