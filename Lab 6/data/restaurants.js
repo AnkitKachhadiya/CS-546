@@ -2,6 +2,12 @@ const { ObjectId } = require("mongodb");
 const mongoCollections = require("../config/mongoCollections");
 const restaurants = mongoCollections.restaurants;
 
+const ErrorCode = {
+    BAD_REQUEST: 400,
+    NOT_FOUND: 404,
+    INTERNAL_SERVER_ERROR: 500,
+};
+
 async function create(
     _name,
     _location,
@@ -9,47 +15,62 @@ async function create(
     _website,
     _priceRange,
     _cuisines,
-    overallRating,
     serviceOptions
 ) {
-    validateTotalArguments(arguments.length);
+    try {
+        validateTotalArguments(arguments.length);
 
-    const name = validateName(_name);
-    const location = validateLocation(_location);
-    const phoneNumber = validatePhoneNumber(_phoneNumber);
-    const website = validateWebsite(_website);
-    const priceRange = validatePriceRange(_priceRange);
-    const cuisines = validateCuisines(_cuisines);
-    validateOverallRating(overallRating);
-    validateServiceOptions(serviceOptions);
+        const name = validateName(_name);
+        const location = validateLocation(_location);
+        const phoneNumber = validatePhoneNumber(_phoneNumber);
+        const website = validateWebsite(_website);
+        const priceRange = validatePriceRange(_priceRange);
+        const cuisines = validateCuisines(_cuisines);
+        validateServiceOptions(serviceOptions);
 
-    const restaurantCollection = await restaurants();
+        const restaurantCollection = await restaurants();
 
-    const newRestaurant = {
-        name,
-        location,
-        phoneNumber,
-        website,
-        priceRange,
-        cuisines,
-        overallRating,
-        serviceOptions,
-    };
+        const newRestaurant = {
+            name: name,
+            location: location,
+            phoneNumber: phoneNumber,
+            website: website,
+            priceRange: priceRange,
+            cuisines: cuisines,
+            overallRating: 0,
+            serviceOptions: serviceOptions,
+            reviews: [],
+        };
 
-    const insertedInfo = await restaurantCollection.insertOne(newRestaurant);
+        const insertedInfo = await restaurantCollection.insertOne(
+            newRestaurant
+        );
 
-    if (insertedInfo.insertedCount !== 1) {
-        throw "Error: Could not add restaurant.";
+        if (!insertedInfo.insertedId) {
+            throwError(
+                ErrorCode.INTERNAL_SERVER_ERROR,
+                "Error: Could not add restaurant."
+            );
+        }
+
+        const insertedRestaurantId = insertedInfo.insertedId;
+
+        const restaurant = await get(insertedRestaurantId.toString());
+
+        return restaurant;
+    } catch (error) {
+        throwCatchError(error);
     }
-
-    const insertedRestaurantId = insertedInfo.insertedId;
-
-    const restaurant = await get(insertedRestaurantId.toString());
-
-    return restaurant;
 }
 
 async function getAll() {
+    if (arguments.length !== 0) {
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            "Error: This function doesn't require to pass parameters."
+        );
+    }
+
     const restaurantCollection = await restaurants();
 
     const restaurantList = await restaurantCollection
@@ -60,13 +81,6 @@ async function getAll() {
                         $toString: "$_id",
                     },
                     name: 1,
-                    location: 1,
-                    phoneNumber: 1,
-                    website: 1,
-                    priceRange: 1,
-                    cuisines: 1,
-                    overallRating: 1,
-                    serviceOptions: 1,
                 },
             },
         ])
@@ -87,7 +101,7 @@ async function get(_restaurantId) {
     });
 
     if (!restaurant) {
-        throw "Error: No restaurant with that id.";
+        throwError(ErrorCode.NOT_FOUND, "Error: No restaurant with that id.");
     }
 
     restaurant._id = restaurant._id.toString();
@@ -140,10 +154,13 @@ async function rename(restaurantId, _newWebsite) {
 
 //All validations
 const validateTotalArguments = (totalArguments) => {
-    const TOTAL_MANDATORY_ARGUMENTS = 8;
+    const TOTAL_MANDATORY_ARGUMENTS = 7;
 
     if (totalArguments !== TOTAL_MANDATORY_ARGUMENTS) {
-        throw "Error: All fields need to have valid values.";
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            "Error: All fields need to have valid values."
+        );
     }
 };
 
@@ -171,7 +188,10 @@ const validatePhoneNumber = (_phoneNumber) => {
     const phoneNumberRegex = /^\d{3}[-]\d{3}[-]\d{4}$/;
 
     if (!phoneNumberRegex.test(phoneNumber)) {
-        throw "Error: Invalid phone number. Format should be 'xxx-xxx-xxxx'.";
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            "Error: Invalid phone number. Format should be 'xxx-xxx-xxxx'."
+        );
     }
 
     return phoneNumber;
@@ -187,7 +207,10 @@ const validateWebsite = (_website) => {
     const websiteRegex = /^http(s?):\/\/www\.[^\s]{5,}.com$/i;
 
     if (!websiteRegex.test(website)) {
-        throw "Error: Invalid website. Should have a string that starts with `http://www.` 5 or more characters with no spaces and ends with `.com` e.g. `http://www.example.com`.";
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            "Error: Invalid website. Should have a string that starts with `http://www.` 5 or more characters with no spaces and ends with `.com` e.g. `http://www.example.com`."
+        );
     }
 
     return website;
@@ -203,7 +226,10 @@ const validatePriceRange = (_priceRange) => {
     const priceRangeRegex = /^\${1,4}$/;
 
     if (!priceRangeRegex.test(priceRange)) {
-        throw "Error: Invalid price range. Price range should be between '$' to '$$$$'.";
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            "Error: Invalid price range. Price range should be between '$' to '$$$$'."
+        );
     }
 
     return priceRange;
@@ -224,23 +250,13 @@ const validateCuisines = (_cuisines) => {
             continue;
         }
 
-        throw "Error: Cuisines must have non empty string elements.";
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            "Error: Cuisines must have non empty string elements."
+        );
     }
 
     return cuisines;
-};
-
-const validateOverallRating = (overallRating) => {
-    if (typeof overallRating !== "number" || isNaN(overallRating)) {
-        throw "Error: Overall rating must be a number.";
-    }
-
-    const LOWEST_RATING = 0;
-    const HIGHEST_RATING = 5;
-
-    if (overallRating < LOWEST_RATING || overallRating > HIGHEST_RATING) {
-        throw "Error: Overall rating must from 0 to 5.";
-    }
 };
 
 const validateServiceOptions = (serviceOptions) => {
@@ -248,7 +264,10 @@ const validateServiceOptions = (serviceOptions) => {
     isObjectEmpty(serviceOptions, "service options");
 
     if (Object.keys(serviceOptions).length !== 3) {
-        throw "Error: Service options has invalid number of options.";
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            "Error: Service options has invalid number of options."
+        );
     }
 
     if (
@@ -256,7 +275,10 @@ const validateServiceOptions = (serviceOptions) => {
         !serviceOptions.hasOwnProperty("takeOut") ||
         !serviceOptions.hasOwnProperty("delivery")
     ) {
-        throw "Error: Service options does not have valid options.";
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            "Error: Service options does not have valid options."
+        );
     }
 
     const hasValidElements = Object.values(serviceOptions).every(
@@ -266,47 +288,65 @@ const validateServiceOptions = (serviceOptions) => {
     );
 
     if (!hasValidElements) {
-        throw "Error: All service options should have boolean values.";
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            "Error: All service options should have boolean values."
+        );
     }
 };
 
 const isArgumentString = (str, variableName) => {
     if (typeof str !== "string") {
-        throw `Error: Invalid argument passed for ${
-            variableName || "provided variable"
-        }. Expected string.`;
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Error: Invalid argument passed for ${
+                variableName || "provided variable"
+            }. Expected string.`
+        );
     }
 };
 
 const isStringEmpty = (str, variableName) => {
     if (!str.trim() || str.length < 1) {
-        throw `Error: Empty string passed for ${
-            variableName || "provided variable"
-        }.`;
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Error: Empty string passed for ${
+                variableName || "provided variable"
+            }.`
+        );
     }
 };
 
 const isArgumentArray = (arr, variableName) => {
     if (!Array.isArray(arr)) {
-        throw `Error: Invalid argument passed for ${
-            variableName || "provided variable"
-        }. Expected array.`;
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Error: Invalid argument passed for ${
+                variableName || "provided variable"
+            }. Expected array.`
+        );
     }
 };
 
 const isArrayEmpty = (arr, variableName) => {
     if (arr.length < 1) {
-        throw `Error: Empty array passed for ${
-            variableName || "provided variable"
-        }.`;
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Error: Empty array passed for ${
+                variableName || "provided variable"
+            }.`
+        );
     }
 };
 
 const isArgumentObject = (obj, variableName) => {
     if (!isObject(obj)) {
-        throw `Error: Invalid argument passed for ${
-            variableName || "provided variable"
-        }. Expected object.`;
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Error: Invalid argument passed for ${
+                variableName || "provided variable"
+            }. Expected object.`
+        );
     }
 };
 
@@ -322,9 +362,12 @@ const isObject = (obj) => {
 
 const isObjectEmpty = (obj, variableName) => {
     if (Object.keys(obj).length < 1) {
-        throw `Error: Empty object passed for ${
-            variableName || "provided variable"
-        }.`;
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            `Error: Empty object passed for ${
+                variableName || "provided variable"
+            }.`
+        );
     }
 };
 
@@ -337,10 +380,25 @@ const validateRestaurantId = (restaurantId) => {
 
 const validateObjectId = (id) => {
     if (!ObjectId.isValid(id)) {
-        throw "Error: id is not a valid ObjectId.";
+        throwError(ErrorCode.BAD_REQUEST, "Error: id is not a valid ObjectId.");
     }
 
     return ObjectId(id);
+};
+
+const throwError = (code = 404, message = "Not found") => {
+    throw { code, message };
+};
+
+const throwCatchError = (error) => {
+    if (error.code && error.message) {
+        throwError(error.code, error.message);
+    }
+
+    throwError(
+        ErrorCode.INTERNAL_SERVER_ERROR,
+        "Error: Internal server error."
+    );
 };
 
 module.exports = {
