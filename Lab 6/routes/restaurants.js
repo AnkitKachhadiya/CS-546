@@ -124,6 +124,31 @@ router.put("/:id", async (request, response) => {
     }
 });
 
+//delete restaurant by id
+router.delete("/:id", async (request, response) => {
+    try {
+        restrictRequestQuery(request, response);
+
+        if (Object.keys(request.body).length !== 0) {
+            throwError(
+                ErrorCode.BAD_REQUEST,
+                "Error: Doesn't require fields to be passed."
+            );
+        }
+
+        const restaurantId = validateRestaurantId(request.params.id);
+
+        validateObjectId(restaurantId);
+
+        const deletedRestaurant = await restaurantsData.remove(restaurantId);
+        response.json(deletedRestaurant);
+    } catch (error) {
+        response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
+            serverResponse: error.message || "Internal server error.",
+        });
+    }
+});
+
 //All validations
 const validateTotalFieldsCreate = (totalFields) => {
     const TOTAL_MANDATORY_Fields = 7;
@@ -356,7 +381,10 @@ const validateRestaurantId = (restaurantId) => {
 };
 
 const validateObjectId = (id) => {
-    if (!ObjectId.isValid(id)) {
+    //should match 24 length Hex string
+    const objectIdRegex = /^[a-fA-F0-9]{24}$/;
+
+    if (!ObjectId.isValid(id) || !objectIdRegex.test(id)) {
         throwError(ErrorCode.BAD_REQUEST, "Error: id is not a valid ObjectId.");
     }
 

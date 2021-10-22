@@ -133,10 +133,16 @@ async function remove(restaurantId) {
         });
 
         if (deletedInfo.deletedCount !== 1) {
-            throw `Could not delete restaurant with id ${restaurantId}`;
+            throwError(
+                ErrorCode.INTERNAL_SERVER_ERROR,
+                `Could not delete restaurant with id ${restaurantId}`
+            );
         }
 
-        return `${restaurant.name} has been successfully deleted!`;
+        return {
+            restaurantId: restaurantId,
+            deleted: true,
+        };
     } catch (error) {
         throwCatchError(error);
     }
@@ -431,7 +437,10 @@ const validateRestaurantId = (restaurantId) => {
 };
 
 const validateObjectId = (id) => {
-    if (!ObjectId.isValid(id)) {
+    //should match 24 length Hex string
+    const objectIdRegex = /^[a-fA-F0-9]{24}$/;
+
+    if (!ObjectId.isValid(id) || !objectIdRegex.test(id)) {
         throwError(ErrorCode.BAD_REQUEST, "Error: id is not a valid ObjectId.");
     }
 

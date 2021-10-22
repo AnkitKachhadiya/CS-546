@@ -71,6 +71,59 @@ async function create(
 //get reviews by restaurant id
 async function getAll(restaurantId) {
     try {
+        const restaurant = await getRestaurant(restaurantId);
+
+        return restaurant.reviews;
+    } catch (error) {
+        throwCatchError(error);
+    }
+}
+
+//get review by review id
+async function get(_reviewId) {
+    try {
+        const reviewId = validateReviewId(_reviewId);
+
+        const parsedObjectId = validateObjectId(reviewId);
+
+        const restaurantCollection = await restaurants();
+
+        //todo: get review pending
+        const review = await restaurantCollection.findOne(
+            {
+                "reviews._id": parsedObjectId,
+            },
+            { projection: { _id: 0, "reviews.$": 1 } }
+        );
+
+        if (!review) {
+            throwError(ErrorCode.NOT_FOUND, "Error: No review with that id.");
+        }
+
+        // review._id = review._id.toString();
+
+        return review;
+    } catch (error) {
+        throwCatchError(error);
+    }
+}
+
+//delete review by review id
+async function remove(_reviewId) {
+    try {
+        const reviewId = validateReviewId(_reviewId);
+
+        const parsedObjectId = validateObjectId(reviewId);
+
+        const restaurantCollection = await restaurants();
+
+        const review = await restaurantCollection.findOne({
+            "reviews._id": parsedObjectId,
+        });
+
+        if (!review) {
+            throwError(ErrorCode.NOT_FOUND, "Error: No review with that id.");
+        }
     } catch (error) {
         throwCatchError(error);
     }
@@ -96,6 +149,10 @@ async function getRestaurant(_restaurantId) {
         }
 
         restaurant._id = restaurant._id.toString();
+
+        //todo: convert to string for reviews object id
+
+        console.log(restaurant);
 
         return restaurant;
     } catch (error) {
@@ -214,8 +271,18 @@ const validateRestaurantId = (restaurantId) => {
     return restaurantId.trim();
 };
 
+const validateReviewId = (reviewId) => {
+    isArgumentString(reviewId, "id");
+    isStringEmpty(reviewId, "id");
+
+    return reviewId.trim();
+};
+
 const validateObjectId = (id) => {
-    if (!ObjectId.isValid(id)) {
+    //should match 24 length Hex string
+    const objectIdRegex = /^[a-fA-F0-9]{24}$/;
+
+    if (!ObjectId.isValid(id) || !objectIdRegex.test(id)) {
         throwError(ErrorCode.BAD_REQUEST, "Error: id is not a valid ObjectId.");
     }
 
@@ -239,6 +306,7 @@ const throwError = (code = 404, message = "Not found") => {
 };
 
 const throwCatchError = (error) => {
+    console.log(error);
     if (error.code && error.message) {
         throwError(error.code, error.message);
     }
@@ -251,4 +319,7 @@ const throwCatchError = (error) => {
 
 module.exports = {
     create,
+    getAll,
+    get,
+    remove,
 };

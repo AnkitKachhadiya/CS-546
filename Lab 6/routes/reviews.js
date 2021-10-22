@@ -53,8 +53,61 @@ router.get("/:restaurantId", async (request, response) => {
             );
         }
 
-        const reviews = await reviewsData.getAll();
+        const restaurantId = validateRestaurantId(request.params.restaurantId);
+
+        validateObjectId(restaurantId);
+
+        const reviews = await reviewsData.getAll(restaurantId);
         response.json(reviews);
+    } catch (error) {
+        response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
+            serverResponse: error.message || "Internal server error.",
+        });
+    }
+});
+
+//get review by review id
+router.get("/review/:id", async (request, response) => {
+    try {
+        restrictRequestQuery(request, response);
+
+        if (Object.keys(request.body).length !== 0) {
+            throwError(
+                ErrorCode.BAD_REQUEST,
+                "Error: Doesn't require fields to be passed."
+            );
+        }
+
+        const reviewId = validateReviewId(request.params.id);
+
+        validateObjectId(reviewId);
+
+        const review = await reviewsData.get(reviewId);
+        response.json(review);
+    } catch (error) {
+        response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
+            serverResponse: error.message || "Internal server error.",
+        });
+    }
+});
+
+router.delete("/reviews/:id", async (request, response) => {
+    try {
+        restrictRequestQuery(request, response);
+
+        if (Object.keys(request.body).length !== 0) {
+            throwError(
+                ErrorCode.BAD_REQUEST,
+                "Error: Doesn't require fields to be passed."
+            );
+        }
+
+        const reviewId = validateReviewId(request.params.id);
+
+        validateObjectId(reviewId);
+
+        const deletedReview = await reviewsData.remove(reviewId);
+        response.json(deletedReview);
     } catch (error) {
         response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
             serverResponse: error.message || "Internal server error.",
@@ -173,8 +226,18 @@ const validateRestaurantId = (restaurantId) => {
     return restaurantId.trim();
 };
 
+const validateReviewId = (reviewId) => {
+    isArgumentString(reviewId, "id");
+    isStringEmpty(reviewId, "id");
+
+    return reviewId.trim();
+};
+
 const validateObjectId = (id) => {
-    if (!ObjectId.isValid(id)) {
+    //should match 24 length Hex string
+    const objectIdRegex = /^[a-fA-F0-9]{24}$/;
+
+    if (!ObjectId.isValid(id) || !objectIdRegex.test(id)) {
         throwError(ErrorCode.BAD_REQUEST, "Error: id is not a valid ObjectId.");
     }
 
