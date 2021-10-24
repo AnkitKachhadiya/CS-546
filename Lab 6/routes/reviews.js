@@ -91,7 +91,7 @@ router.get("/review/:id", async (request, response) => {
     }
 });
 
-router.delete("/reviews/:id", async (request, response) => {
+router.delete("/:id", async (request, response) => {
     try {
         restrictRequestQuery(request, response);
 
@@ -147,11 +147,11 @@ const validateRating = (rating) => {
         throwError(ErrorCode.BAD_REQUEST, "Error: Rating must be a number.");
     }
 
-    const LOWEST_RATING = 0;
+    const LOWEST_RATING = 1;
     const HIGHEST_RATING = 5;
 
     if (rating < LOWEST_RATING || rating > HIGHEST_RATING) {
-        throwError(ErrorCode.BAD_REQUEST, "Error: Rating must be from 0 to 5.");
+        throwError(ErrorCode.BAD_REQUEST, "Error: Rating must be from 1 to 5.");
     }
 };
 

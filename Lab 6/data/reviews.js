@@ -30,8 +30,6 @@ async function create(
 
         const restaurantCollection = await restaurants();
 
-        //check for duplicate reviews
-
         const newReview = {
             _id: ObjectId(),
             title: title,
@@ -73,6 +71,13 @@ async function getAll(restaurantId) {
     try {
         const restaurant = await getRestaurant(restaurantId);
 
+        if (
+            restaurant.hasOwnProperty("reviews") &&
+            restaurant.reviews.length < 1
+        ) {
+            throwError(ErrorCode.NOT_FOUND, "Error: No reviews found.");
+        }
+
         return restaurant.reviews;
     } catch (error) {
         throwCatchError(error);
@@ -88,19 +93,25 @@ async function get(_reviewId) {
 
         const restaurantCollection = await restaurants();
 
-        //todo: get review pending
-        const review = await restaurantCollection.findOne(
+        const reviewResult = await restaurantCollection.findOne(
             {
                 "reviews._id": parsedObjectId,
             },
-            { projection: { _id: 0, "reviews.$": 1 } }
+            {
+                projection: {
+                    _id: 0,
+                    "reviews.$": 1,
+                },
+            }
         );
 
-        if (!review) {
+        if (!reviewResult) {
             throwError(ErrorCode.NOT_FOUND, "Error: No review with that id.");
         }
 
-        // review._id = review._id.toString();
+        const [review] = reviewResult.reviews;
+
+        review._id = review._id.toString();
 
         return review;
     } catch (error) {
@@ -117,13 +128,42 @@ async function remove(_reviewId) {
 
         const restaurantCollection = await restaurants();
 
-        const review = await restaurantCollection.findOne({
+        const restaurantWithReview = await restaurantCollection.findOne({
             "reviews._id": parsedObjectId,
         });
 
-        if (!review) {
+        if (!restaurantWithReview) {
             throwError(ErrorCode.NOT_FOUND, "Error: No review with that id.");
         }
+
+        const nonRemovedReviews = restaurantWithReview.reviews.filter(
+            (currentReview) => {
+                return currentReview._id.toString() !== reviewId;
+            }
+        );
+
+        let newOverallRating = 0;
+
+        if (nonRemovedReviews.length > 0) {
+            newOverallRating = getAverageOfRestaurantRatings(nonRemovedReviews);
+        }
+
+        const updatedInfo = await restaurantCollection.updateOne(
+            { _id: restaurantWithReview._id },
+            {
+                $pull: { reviews: { _id: parsedObjectId } },
+                $set: { overallRating: newOverallRating },
+            }
+        );
+
+        if (updatedInfo.modifiedCount !== 1) {
+            throwError(
+                ErrorCode.INTERNAL_SERVER_ERROR,
+                "Error: Could not remove review."
+            );
+        }
+
+        return { reviewId: _reviewId, deleted: true };
     } catch (error) {
         throwCatchError(error);
     }
@@ -150,9 +190,15 @@ async function getRestaurant(_restaurantId) {
 
         restaurant._id = restaurant._id.toString();
 
-        //todo: convert to string for reviews object id
-
-        console.log(restaurant);
+        if (
+            restaurant.hasOwnProperty("reviews") &&
+            restaurant.reviews.length > 0
+        ) {
+            restaurant.reviews = restaurant.reviews.map((currentReview) => {
+                currentReview._id = currentReview._id.toString();
+                return currentReview;
+            });
+        }
 
         return restaurant;
     } catch (error) {
@@ -192,11 +238,11 @@ const validateRating = (rating) => {
         throwError(ErrorCode.BAD_REQUEST, "Error: Rating must be a number.");
     }
 
-    const LOWEST_RATING = 0;
+    const LOWEST_RATING = 1;
     const HIGHEST_RATING = 5;
 
     if (rating < LOWEST_RATING || rating > HIGHEST_RATING) {
-        throwError(ErrorCode.BAD_REQUEST, "Error: Rating must be from 0 to 5.");
+        throwError(ErrorCode.BAD_REQUEST, "Error: Rating must be from 1 to 5.");
     }
 };
 

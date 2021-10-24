@@ -116,6 +116,17 @@ async function get(_restaurantId) {
 
         restaurant._id = restaurant._id.toString();
 
+        if (
+            restaurant.hasOwnProperty("reviews") &&
+            restaurant.reviews.length > 0
+        ) {
+            restaurant.reviews = restaurant.reviews.map((currentReview) => {
+                currentReview._id = currentReview._id.toString();
+                return currentReview;
+            });
+        }
+
+        console.log(restaurant);
         return restaurant;
     } catch (error) {
         throwCatchError(error);
