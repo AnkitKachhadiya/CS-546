@@ -177,27 +177,40 @@ async function getRestaurant(_restaurantId) {
 
         const restaurantCollection = await restaurants();
 
-        const restaurant = await restaurantCollection.findOne({
-            _id: parsedObjectId,
-        });
+        const restaurant = await restaurantCollection.findOne(
+            {
+                _id: parsedObjectId,
+            },
+            {
+                projection: {
+                    _id: {
+                        $toString: "$_id",
+                    },
+                    name: 1,
+                    location: 1,
+                    phoneNumber: 1,
+                    website: 1,
+                    priceRange: 1,
+                    cuisines: 1,
+                    overallRating: { $trunc: ["$overallRating", 1] },
+                    serviceOptions: 1,
+                    reviews: {
+                        _id: { $toString: "$_id" },
+                        title: 1,
+                        reviewer: 1,
+                        rating: 1,
+                        dateOfReview: 1,
+                        review: 1,
+                    },
+                },
+            }
+        );
 
         if (!restaurant) {
             throwError(
                 ErrorCode.NOT_FOUND,
                 "Error: No restaurant with that id."
             );
-        }
-
-        restaurant._id = restaurant._id.toString();
-
-        if (
-            restaurant.hasOwnProperty("reviews") &&
-            restaurant.reviews.length > 0
-        ) {
-            restaurant.reviews = restaurant.reviews.map((currentReview) => {
-                currentReview._id = currentReview._id.toString();
-                return currentReview;
-            });
         }
 
         return restaurant;
@@ -208,10 +221,13 @@ async function getRestaurant(_restaurantId) {
 
 //All validations
 const validateTotalArgumentsCreate = (totalFields) => {
-    const TOTAL_MANDATORY_Fields = 6;
+    const TOTAL_MANDATORY_ARGUMENTS = 6;
 
-    if (totalFields !== TOTAL_MANDATORY_Fields) {
-        throwError(ErrorCode.BAD_REQUEST, "Error: You must supply all fields.");
+    if (totalFields !== TOTAL_MANDATORY_ARGUMENTS) {
+        throwError(
+            ErrorCode.BAD_REQUEST,
+            "Error: All fields need to have valid values."
+        );
     }
 };
 
@@ -281,7 +297,7 @@ const isArgumentString = (str, variableName) => {
     if (typeof str !== "string") {
         throwError(
             ErrorCode.BAD_REQUEST,
-            `Error: Invalid type for ${
+            `Error: Invalid argument passed for ${
                 variableName || "provided variable"
             }. Expected string.`
         );
@@ -352,7 +368,6 @@ const throwError = (code = 404, message = "Not found") => {
 };
 
 const throwCatchError = (error) => {
-    console.log(error);
     if (error.code && error.message) {
         throwError(error.code, error.message);
     }

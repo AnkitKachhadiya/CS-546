@@ -117,9 +117,9 @@ router.delete("/:id", async (request, response) => {
 
 //All validations
 const validateTotalFieldsCreate = (totalFields) => {
-    const TOTAL_MANDATORY_Fields = 5;
+    const TOTAL_MANDATORY_FIELDS = 5;
 
-    if (totalFields !== TOTAL_MANDATORY_Fields) {
+    if (totalFields !== TOTAL_MANDATORY_FIELDS) {
         throwError(ErrorCode.BAD_REQUEST, "Error: You must supply all fields.");
     }
 };

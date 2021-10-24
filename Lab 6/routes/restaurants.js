@@ -23,6 +23,12 @@ router.get("/", async (request, response) => {
         }
 
         const restaurants = await restaurantsData.getAll();
+
+        if (restaurants.length < 1) {
+            response.status(ErrorCode.NOT_FOUND).send([]);
+            return;
+        }
+
         response.json(restaurants);
     } catch (error) {
         response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
@@ -151,17 +157,17 @@ router.delete("/:id", async (request, response) => {
 
 //All validations
 const validateTotalFieldsCreate = (totalFields) => {
-    const TOTAL_MANDATORY_Fields = 7;
+    const TOTAL_MANDATORY_FIELDS = 7;
 
-    if (totalFields !== TOTAL_MANDATORY_Fields) {
+    if (totalFields !== TOTAL_MANDATORY_FIELDS) {
         throwError(ErrorCode.BAD_REQUEST, "Error: You must supply all fields.");
     }
 };
 
 const validateTotalFieldsUpdate = (totalFields) => {
-    const TOTAL_MANDATORY_Fields = 7;
+    const TOTAL_MANDATORY_FIELDS = 7;
 
-    if (totalFields !== TOTAL_MANDATORY_Fields) {
+    if (totalFields !== TOTAL_MANDATORY_FIELDS) {
         throwError(ErrorCode.BAD_REQUEST, "Error: You must supply all fields.");
     }
 };

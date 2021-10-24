@@ -30,8 +30,6 @@ async function create(
 
         const restaurantCollection = await restaurants();
 
-        //check for duplicate restaurants
-
         const newRestaurant = {
             name: name,
             location: location,
@@ -57,9 +55,7 @@ async function create(
 
         const insertedRestaurantId = insertedInfo.insertedId;
 
-        const restaurant = await get(insertedRestaurantId.toString());
-
-        return restaurant;
+        return await get(insertedRestaurantId.toString());
     } catch (error) {
         throwCatchError(error);
     }
@@ -103,9 +99,34 @@ async function get(_restaurantId) {
 
         const restaurantCollection = await restaurants();
 
-        const restaurant = await restaurantCollection.findOne({
-            _id: parsedObjectId,
-        });
+        const restaurant = await restaurantCollection.findOne(
+            {
+                _id: parsedObjectId,
+            },
+            {
+                projection: {
+                    _id: {
+                        $toString: "$_id",
+                    },
+                    name: 1,
+                    location: 1,
+                    phoneNumber: 1,
+                    website: 1,
+                    priceRange: 1,
+                    cuisines: 1,
+                    overallRating: { $trunc: ["$overallRating", 1] },
+                    serviceOptions: 1,
+                    reviews: {
+                        _id: { $toString: "$_id" },
+                        title: 1,
+                        reviewer: 1,
+                        rating: 1,
+                        dateOfReview: 1,
+                        review: 1,
+                    },
+                },
+            }
+        );
 
         if (!restaurant) {
             throwError(
@@ -114,19 +135,6 @@ async function get(_restaurantId) {
             );
         }
 
-        restaurant._id = restaurant._id.toString();
-
-        if (
-            restaurant.hasOwnProperty("reviews") &&
-            restaurant.reviews.length > 0
-        ) {
-            restaurant.reviews = restaurant.reviews.map((currentReview) => {
-                currentReview._id = currentReview._id.toString();
-                return currentReview;
-            });
-        }
-
-        console.log(restaurant);
         return restaurant;
     } catch (error) {
         throwCatchError(error);
@@ -190,9 +198,7 @@ async function update(
         website: website,
         priceRange: priceRange,
         cuisines: cuisines,
-        overallRating: restaurant.overallRating,
         serviceOptions: serviceOptions,
-        reviews: restaurant.reviews,
     };
 
     const updatedInfo = await restaurantCollection.updateOne(
