@@ -85,8 +85,9 @@ router.get("/:id", async (request, response) => {
 
         validateObjectId(restaurantId);
 
-        const person = await restaurantsData.get(restaurantId);
-        response.json(person);
+        const restaurant = await restaurantsData.get(restaurantId);
+
+        response.json(restaurant);
     } catch (error) {
         response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
             serverResponse: error.message || "Internal server error.",

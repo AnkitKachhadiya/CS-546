@@ -91,6 +91,7 @@ router.get("/review/:id", async (request, response) => {
     }
 });
 
+//delete review by review id
 router.delete("/:id", async (request, response) => {
     try {
         restrictRequestQuery(request, response);

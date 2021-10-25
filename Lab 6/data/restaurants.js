@@ -117,12 +117,17 @@ async function get(_restaurantId) {
                     overallRating: { $trunc: ["$overallRating", 1] },
                     serviceOptions: 1,
                     reviews: {
-                        _id: { $toString: "$_id" },
-                        title: 1,
-                        reviewer: 1,
-                        rating: 1,
-                        dateOfReview: 1,
-                        review: 1,
+                        $map: {
+                            input: "$reviews",
+                            in: {
+                                _id: { $toString: "$$this._id" },
+                                title: "$$this.title",
+                                reviewer: "$$this.reviewer",
+                                rating: "$$this.rating",
+                                dateOfReview: "$$this.dateOfReview",
+                                review: "$$this.review",
+                            },
+                        },
                     },
                 },
             }
