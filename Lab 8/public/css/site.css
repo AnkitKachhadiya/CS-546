@@ -57,7 +57,7 @@ label {
 }
 
 .btn-grad:hover {
-    background-position: right center; /* change the direction of the change here */
+    background-position: right center;
     color: #fff;
     text-decoration: none;
 }
@@ -90,8 +90,6 @@ li {
 }
 
 body {
-    /* background-color: black;
-    color: white; */
     font-family: cursive;
 }
 
@@ -104,10 +102,8 @@ input:focus {
 }
 
 .link {
-    /* RESET */
     text-decoration: none;
     line-height: 1;
-
     position: relative;
     z-index: 0;
     display: inline-block;
@@ -160,4 +156,30 @@ li.comic-list:nth-child(odd) {
         1px 2px 1px #eee, 3px 2px 1px #ccc, 2px 3px 1px #eee, 4px 3px 1px #ccc,
         3px 4px 1px #eee, 5px 4px 1px #ccc, 4px 5px 1px #eee, 6px 5px 1px #ccc,
         5px 6px 1px #eee, 7px 6px 1px #ccc;
+}
+
+h1:after,
+h1:before {
+    background-color: #c6a972;
+    content: "";
+    display: block;
+    height: 2px;
+    position: absolute;
+    -webkit-transform: rotate(-45deg) skewX(45deg);
+    transform: rotate(-45deg) skewX(45deg);
+    width: 20px;
+}
+
+.comics-heading {
+    letter-spacing: 85px;
+}
+
+.character-description {
+    word-spacing: 15px;
+}
+
+p {
+    font-weight: bold;
+    font-style: italic;
+    text-transform: uppercase;
 }

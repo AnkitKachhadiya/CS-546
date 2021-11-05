@@ -31,7 +31,6 @@ router.post("/search", async (request, response) => {
             characters: searchResult,
         });
     } catch (error) {
-        console.log(error);
         response
             .status(error.code || ErrorCode.INTERNAL_SERVER_ERROR)
             .render("marvel-characters/search-result", {

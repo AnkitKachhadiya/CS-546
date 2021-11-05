@@ -76,8 +76,6 @@ async function getCharacterById(_id) {
 
         return character;
     } catch (error) {
-        console.log(error);
-
         throwCatchError(error);
     }
 }
