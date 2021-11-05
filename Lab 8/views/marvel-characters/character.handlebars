@@ -1,0 +1,29 @@
+<main>
+    {{#unless error}}
+        <div>
+            <h1 class="character-name">{{characterName}}</h1>
+            <img
+                class="character-image"
+                src="{{characterImage}}"
+                alt="{{characterName}}"
+            />
+            <p>{{characterDescription}}</p>
+            <h2>Comics</h2>
+            {{#if characterComics.length}}
+                <ul>
+                    {{#each characterComics}}
+                        <li class="comic-list">
+                            {{name}}
+                        </li>
+                    {{/each}}
+                </ul>
+            {{else}}
+                NA
+            {{/if}}
+        </div>
+    {{/unless}}
+
+    {{#if error}}
+        <p class="error">{{error}}</p>
+    {{/if}}
+</main>

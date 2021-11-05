@@ -1,4 +1,5 @@
 const marvelCharactersRoutes = require("./marvel-characters");
+const path = require("path");
 
 const constructorMethod = (app) => {
     //will load search bar page i.e home page of the application
@@ -6,12 +7,16 @@ const constructorMethod = (app) => {
 
     //for accessing unknown routes
     app.use("*", (request, response) => {
-        response.redirect("/posts");
+        response
+            .status(404)
+            .sendFile(path.resolve("static/page-not-found.html"));
     });
 
     //for invalid URI
     app.use(function (error, request, response, next) {
-        response.redirect("/posts");
+        response
+            .status(404)
+            .sendFile(path.resolve("static/page-not-found.html"));
     });
 };
 
