@@ -1,0 +1,36 @@
+<h1>Sign-up</h1>
+
+<main>
+    <form action="/signup" method="post" id="signup-form">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input
+                type="text"
+                name="username"
+                id="username"
+                autocomplete="off"
+                class="form-control"
+                placeholder="Enter username"
+            />
+            <small class="form-text text-muted">Username should be at least 4
+                characters long and only alphanumeric characters.</small>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input
+                type="password"
+                name="password"
+                id="password"
+                autocomplete="off"
+                class="form-control"
+                placeholder="Enter password"
+            />
+            <small class="form-text text-muted">Password should be at least 6
+                characters long.</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Sign-up</button>
+        Or
+        <a href="/" class="link-primary">Already have an account? Click here to
+            log-in</a>
+    </form>
+</main>
