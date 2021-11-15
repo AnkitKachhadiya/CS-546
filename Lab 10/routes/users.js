@@ -1,8 +1,8 @@
 const express = require("express");
-const { ObjectId } = require("mongodb");
-const router = express.Router();
 const data = require("../data");
+
 const usersData = data.users;
+const router = express.Router();
 
 const ErrorCode = {
     BAD_REQUEST: 400,
@@ -12,64 +12,125 @@ const ErrorCode = {
 
 //login form
 router.get("/", async (request, response) => {
+    isUserLoggedIn(request, response);
+
     response.render("users/login", { pageTitle: "Login" });
 });
 
 //signup form
 router.get("/signup", async (request, response) => {
+    isUserLoggedIn(request, response);
+
     response.render("users/sign-up", { pageTitle: "Sign-up" });
 });
 
 //signup submit
 router.post("/signup", async (request, response) => {
+    isUserLoggedIn(request, response);
+
+    let displayUsername, displayPassword;
+
     try {
-        response.render("users/private", { pageTitle: "Private" });
+        const requestPostData = request.body;
+
+        displayUsername = requestPostData.username;
+        displayPassword = requestPostData.password;
+
+        validateTotalFields(Object.keys(requestPostData).length);
+
+        const username = validateUsername(
+            requestPostData.username
+        ).toLowerCase();
+
+        const password = validatePassword(requestPostData.password);
+
+        const user = await usersData.createUser(username, password);
+
+        if (!user.userInserted) {
+            throwError(
+                ErrorCode.INTERNAL_SERVER_ERROR,
+                "Error: Internal server error."
+            );
+        }
+
+        request.session.user = { username };
+
+        response.redirect("/private");
     } catch (error) {
-        response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
-            serverResponse: error.message || "Internal server error.",
-        });
+        response
+            .status(error.code || ErrorCode.INTERNAL_SERVER_ERROR)
+            .render("users/sign-up", {
+                pageTitle: "Sign-up",
+                username: displayUsername,
+                password: displayPassword,
+                error: error.message || "Internal server error.",
+            });
     }
 });
 
 //login submit
 router.post("/login", async (request, response) => {
+    isUserLoggedIn(request, response);
+
+    let displayUsername, displayPassword;
+
     try {
         const requestPostData = request.body;
 
+        displayUsername = requestPostData.username;
+        displayPassword = requestPostData.password;
+
         validateTotalFields(Object.keys(requestPostData).length);
 
-        const username = validateUsername(requestPostData.username);
+        const username = validateUsername(
+            requestPostData.username
+        ).toLowerCase();
+
         const password = validatePassword(requestPostData.password);
 
         const user = await usersData.checkUser(username, password);
 
         console.log(user);
 
-        response.render("users/private", { pageTitle: "Private" });
+        if (!user.authenticated) {
+            throwError(
+                ErrorCode.INTERNAL_SERVER_ERROR,
+                "Error: Internal server error."
+            );
+        }
+
+        request.session.user = { username };
+
+        response.redirect("/private");
     } catch (error) {
-        response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
-            serverResponse: error.message || "Internal server error.",
-        });
+        response
+            .status(error.code || ErrorCode.INTERNAL_SERVER_ERROR)
+            .render("users/login", {
+                pageTitle: "Login",
+                username: displayUsername,
+                password: displayPassword,
+                error: error.message || "Internal server error.",
+            });
     }
 });
 
 //private page
 router.get("/private", async (request, response) => {
-    try {
-    } catch (error) {
-        response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
-            serverResponse: error.message || "Internal server error.",
-        });
+    const user = request.session.user;
+
+    if (!user) {
+        response.redirect("/");
     }
+
+    response.render("users/private", { pageTitle: "Private" });
 });
 
 //logout
 router.get("/logout", async (request, response) => {
-    try {
-    } catch (error) {
-        response.status(error.code || ErrorCode.INTERNAL_SERVER_ERROR).send({
-            serverResponse: error.message || "Internal server error.",
-        });
+    const user = request.session.user;
+
+    if (!user) {
+        response.redirect("/");
     }
 });
 
@@ -156,14 +217,16 @@ const isStringEmpty = (str, variableName) => {
     }
 };
 
-const restrictRequestQuery = (request, response) => {
-    if (Object.keys(request.query).length > 0) {
-        throw { code: 400, message: "Request query not allowed." };
-    }
-};
-
 const throwError = (code = 404, message = "Not found") => {
     throw { code, message };
+};
+
+const isUserLoggedIn = (request, response) => {
+    const user = request.session.user;
+
+    if (user) {
+        response.redirect("/private");
+    }
 };
 
 module.exports = router;

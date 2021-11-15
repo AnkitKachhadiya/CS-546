@@ -21,11 +21,10 @@ app.set("views", "./views");
 
 app.use(
     session({
-        name: "SessionRocks",
+        name: "AuthCookie",
         secret: `There !$ /\/0 $ecret f0r /\/\Y $e$$!0/\/`,
-        saveUninitialized: true,
         resave: false,
-        cookie: { maxAge: ONE_DAY },
+        saveUninitialized: true,
     })
 );
 
