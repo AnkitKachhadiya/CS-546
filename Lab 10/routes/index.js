@@ -2,7 +2,7 @@ const usersRoutes = require("./users");
 const path = require("path");
 
 const constructorMethod = (app) => {
-    //will load search bar page i.e home page of the application
+    //will load login page i.e home page of the application
     app.use("/", usersRoutes);
 
     //for accessing unknown routes

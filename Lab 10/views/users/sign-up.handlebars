@@ -2,8 +2,9 @@
 
 <main>
     <form action="/signup" method="post" id="signup-form">
+
         <div class="form-group">
-            <label for="username">Username</label>
+            <label for="username">Username<span>*</span></label>
             <input
                 type="text"
                 name="username"
@@ -11,12 +12,16 @@
                 autocomplete="off"
                 class="form-control"
                 placeholder="Enter username"
+                value="{{username}}"
+                required="required"
             />
             <small class="form-text text-muted">Username should be at least 4
-                characters long and only alphanumeric characters.</small>
+                characters long, only alphanumeric characters and no spaces
+                allowed.</small>
         </div>
+
         <div class="form-group">
-            <label for="password">Password</label>
+            <label for="password">Password<span>*</span></label>
             <input
                 type="password"
                 name="password"
@@ -24,13 +29,20 @@
                 autocomplete="off"
                 class="form-control"
                 placeholder="Enter password"
+                value="{{password}}"
+                required="required"
             />
             <small class="form-text text-muted">Password should be at least 6
                 characters long.</small>
         </div>
+
         <button type="submit" class="btn btn-primary">Sign-up</button>
         Or
         <a href="/" class="link-primary">Already have an account? Click here to
             log-in</a>
+
+        {{#if error}}
+            <p id="error">{{error}}</p>
+        {{/if}}
     </form>
 </main>

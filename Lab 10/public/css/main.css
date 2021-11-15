@@ -93,3 +93,21 @@ small {
 .form-group {
     margin-bottom: 1rem;
 }
+
+.text-primary {
+    color: #007bff;
+}
+
+footer {
+    margin-top: 75%;
+    text-align: center;
+}
+
+#error {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+label > span {
+    color: red;
+}

@@ -2,6 +2,7 @@ const express = require("express");
 const session = require("express-session");
 const configRoutes = require("./routes");
 const { engine } = require("express-handlebars");
+const path = require("path");
 
 const static = express.static(__dirname + "/public");
 const app = express();
@@ -27,6 +28,29 @@ app.use(
         saveUninitialized: true,
     })
 );
+
+app.use(async (request, response, next) => {
+    const currentTimestamp = new Date().toUTCString();
+    const method = request.method;
+    const routeUrl = request.originalUrl;
+    const authenticationStatus = request.session.user
+        ? "(Authenticated User)"
+        : "(Non-Authenticated User)";
+
+    console.log(
+        `[${currentTimestamp}]: ${method} ${routeUrl} ${authenticationStatus}`
+    );
+
+    next();
+});
+
+app.use("/private", (request, response, next) => {
+    if (!request.session.user) {
+        response.status(403).sendFile(path.resolve("static/forbidden.html"));
+    } else {
+        next();
+    }
+});
 
 configRoutes(app);
 

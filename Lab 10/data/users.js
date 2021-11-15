@@ -36,7 +36,10 @@ async function createUser(_username, _password) {
         const insertedInfo = await usersCollection.insertOne(newUser);
 
         if (!insertedInfo.insertedId) {
-            throwError(ErrorCode.BAD_REQUEST, "Error: Could not add user.");
+            throwError(
+                ErrorCode.INTERNAL_SERVER_ERROR,
+                "Error: Could not add user."
+            );
         }
 
         return { userInserted: true };
@@ -55,8 +58,6 @@ async function checkUser(_username, _password) {
         const usersCollection = await users();
 
         const user = await usersCollection.findOne({ username: username });
-
-        console.log(user);
 
         if (!user) {
             throwError(
@@ -95,13 +96,11 @@ const validateTotalArguments = (totalArguments) => {
     }
 };
 
-const validateUsername = (_username) => {
-    isArgumentString(_username, "username");
-    isStringEmpty(_username, "username");
+const validateUsername = (username) => {
+    isArgumentString(username, "username");
+    isStringEmpty(username, "username");
 
-    const username = _username.trim();
-
-    if (username.length < 4) {
+    if (username.trim().length < 4) {
         throwError(
             ErrorCode.BAD_REQUEST,
             "Error: Username should be of at least 4 characters long."
@@ -121,13 +120,11 @@ const validateUsername = (_username) => {
     return username;
 };
 
-const validatePassword = (_password) => {
-    isArgumentString(_password, "password");
-    isStringEmpty(_password, "password");
+const validatePassword = (password) => {
+    isArgumentString(password, "password");
+    isStringEmpty(password, "password");
 
-    const password = _password.trim();
-
-    if (password.length < 6) {
+    if (password.trim().length < 6) {
         throwError(
             ErrorCode.BAD_REQUEST,
             "Error: Password should be of at least 6 characters long."
@@ -169,7 +166,7 @@ const isStringEmpty = (str, variableName) => {
     }
 };
 
-const throwError = (code = 404, message = "Not found") => {
+const throwError = (code = 500, message = "Internal Server Error") => {
     throw { code, message };
 };
 
