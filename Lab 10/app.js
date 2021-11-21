@@ -20,7 +20,7 @@ app.engine("handlebars", engine());
 app.set("view engine", "handlebars");
 app.set("views", "./views");
 
-app.use(function (req, res, next) {
+app.use(function (request, response, next) {
     response.header(
         "Cache-Control",
         "private, no-cache, no-store, must-revalidate"
