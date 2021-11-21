@@ -20,6 +20,16 @@ app.engine("handlebars", engine());
 app.set("view engine", "handlebars");
 app.set("views", "./views");
 
+app.use(function (req, res, next) {
+    response.header(
+        "Cache-Control",
+        "private, no-cache, no-store, must-revalidate"
+    );
+    response.header("Expires", "-1");
+    response.header("Pragma", "no-cache");
+    next();
+});
+
 app.use(
     session({
         name: "AuthCookie",
