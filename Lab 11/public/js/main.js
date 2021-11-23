@@ -16,10 +16,23 @@
             return;
         }
 
-        $("#showList").html("");
-
+        hideShowList();
+        hideShow();
         searchShow(searchKeyword);
         showHomeLink();
+    });
+
+    $(document).on("click", "ul#showList > li > a", function (event) {
+        event.preventDefault();
+
+        clearShow();
+        showHomeLink();
+
+        const showUrl = $(this).attr("href");
+
+        getShow(showUrl);
+
+        hideShowList();
     });
 
     function initShows() {
@@ -39,6 +52,15 @@
             method: "GET",
         }).then(function (data) {
             displaySearchedShows(data);
+        });
+    }
+
+    function getShow(showUrl) {
+        $.ajax({
+            url: showUrl,
+            method: "GET",
+        }).then(function (data) {
+            displayShow(data);
         });
     }
 
@@ -80,6 +102,72 @@
         $("#showList").show();
     }
 
+    function displayShow(show) {
+        let html = ``;
+
+        const title = !show.name || show.name.length < 1 ? "N/A" : show.name;
+
+        html += `<h1>
+                    ${title}
+                </h1>`;
+
+        const imageUrl =
+            !show.image || Object.keys(show.image).length < 1
+                ? "/public/image/no_image.jpeg"
+                : show.image.medium;
+
+        html += `<img src="${imageUrl}" alt="${title}">`;
+
+        const language =
+            !show.language || show.language.length < 1 ? "N/A" : show.language;
+
+        let genres = "N/A";
+
+        if (show.genres && show.genres.length > 0) {
+            let ulHtml = ``;
+
+            for (const currentGenre of show.genres) {
+                ulHtml += `<li>${currentGenre}</li>`;
+            }
+
+            genres = `<ul>
+                        ${ulHtml}
+                    </ul>`;
+        }
+
+        const averageRating =
+            !show.rating ||
+            Object.keys(show.rating).length < 1 ||
+            !show.rating.average
+                ? "N/A"
+                : show.rating.average;
+
+        const network =
+            !show.network ||
+            Object.keys(show.network).length < 1 ||
+            !show.network.name
+                ? "N/A"
+                : show.network.name;
+
+        const summary =
+            !show.summary || show.summary.length < 1 ? "N/A" : show.summary;
+
+        html += `<dl>
+                    <dt>Language</dt>
+                    <dd>${language}</dd>
+                    <dt>Genres</dt>
+                    <dd>${genres}</dd>
+                    <dt>Average Rating</dt>
+                    <dd>${averageRating}</dd>
+                    <dt>Network</dt>
+                    <dd>${network}</dd>
+                    <dt>Summary</dt>
+                    <dd>${summary}</dd>
+                </dl>`;
+
+        renderShow(html);
+    }
+
     function showError(errorMessage) {
         $("#error").html(errorMessage);
         $("#error").show();
@@ -102,7 +190,26 @@
         $("#homeLink").show();
     }
 
-    function hideHomeLink() {
-        $("#homeLink").hide();
+    function clearShowList() {
+        $("#showList").html("");
+    }
+
+    function clearShow() {
+        $("#show").html("");
+    }
+
+    function renderShow(html) {
+        $("#show").html(html);
+        $("#show").show();
+    }
+
+    function hideShowList() {
+        clearShowList();
+        $("#showList").hide();
+    }
+
+    function hideShow() {
+        clearShow();
+        $("#show").hide();
     }
 })(jQuery);

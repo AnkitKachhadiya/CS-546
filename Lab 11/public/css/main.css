@@ -1,6 +1,6 @@
 body {
-    /* max-width: 50%;
-    margin: auto; */
+    background: #060d17;
+    color: #d5d5d5;
     font-family: monospace;
 }
 
@@ -14,21 +14,13 @@ label {
     padding: 0.375rem 0.75rem;
     font-size: 1rem;
     line-height: 1.5;
-    color: #495057;
-    background-color: #fff;
+    color: #fff;
+    background-color: #000;
     background-clip: padding-box;
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     margin-bottom: 0.35rem;
-}
-
-.form-control:focus {
-    color: #495057;
-    background-color: #fff;
-    border-color: #80bdff;
-    outline: 0;
-    box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
 }
 
 .btn:not(:disabled):not(.disabled) {
@@ -98,7 +90,7 @@ small {
 }
 
 footer {
-    margin-top: 75%;
+    margin-top: 20%;
     text-align: center;
 }
 
@@ -115,4 +107,57 @@ label > span {
 #message {
     color: #17a2b8;
     font-weight: bold;
+}
+
+li > a {
+    color: #78a6b8;
+    outline: 0;
+    text-decoration: none;
+}
+
+li > a:hover {
+    color: #d5d5d5;
+    text-decoration: none;
+}
+
+img {
+    border-radius: 5px;
+}
+
+dt {
+    font-size: 20px;
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    margin-top: 1rem;
+}
+
+dt:after {
+    content: "";
+    max-width: 40px;
+    width: 100%;
+    display: block;
+    border-bottom: 3px solid #007bff;
+}
+
+#homeLink {
+    background: #007bff;
+    margin-top: 1rem;
+    padding: 1px 10px 1px 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #fff;
+}
+
+ul {
+    list-style-type: none;
+    padding: unset;
+}
+
+ul#showList {
+    font-size: 15px;
+}
+
+ul#showList > li {
+    line-height: 1.5rem;
+    text-transform: uppercase;
 }
