@@ -13,6 +13,10 @@
 
         if (searchKeyword.length < 1 || !searchKeyword) {
             showError("Search keyword cannot be empty.");
+
+            $("#searchForm").get(0).reset();
+            $("#search_term").focus();
+
             return;
         }
 
@@ -25,14 +29,14 @@
     $(document).on("click", "ul#showList > li > a", function (event) {
         event.preventDefault();
 
+        hideError();
         clearShow();
         showHomeLink();
+        hideShowList();
 
         const showUrl = $(this).attr("href");
 
         getShow(showUrl);
-
-        hideShowList();
     });
 
     function initShows() {
@@ -124,14 +128,14 @@
         let genres = "N/A";
 
         if (show.genres && show.genres.length > 0) {
-            let ulHtml = ``;
+            let liHtml = ``;
 
             for (const currentGenre of show.genres) {
-                ulHtml += `<li>${currentGenre}</li>`;
+                liHtml += `<li>${currentGenre}</li>`;
             }
 
             genres = `<ul>
-                        ${ulHtml}
+                        ${liHtml}
                     </ul>`;
         }
 
